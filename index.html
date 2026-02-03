@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Swaim Browser</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg: #0a0b12;
+      --panel: #11151f;
+      --accent: #4f8cff;
+      --text: #f5f7fa;
+      --text-muted: #8a94a6;
+      --border: rgba(255,255,255,0.08);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Top bar */
+    .topbar {
+      height: 52px;
+      background: rgba(10,11,18,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    .logo-icon {
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, var(--accent), #7b6aff);
+      border-radius: 4px;
+    }
+
+    .urlbar {
+      flex: 1;
+      margin: 0 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .urlbar input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .urlbar input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: rgba(255,255,255,0.08);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: rgba(255,255,255,0.15);
+      color: var(--text);
+    }
+
+    .btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Browser content */
+    .browser {
+      flex: 1;
+      position: relative;
+      background: white;
+    }
+
+    #webview {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 320px;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .sidebar-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .tab-content {
+      flex: 1;
+      overflow: auto;
+      padding: 16px;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Focus mode */
+    .focus-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10,11,18,0.98);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 1000;
+    }
+
+    .focus-overlay.active {
+      display: flex;
+    }
+
+    .focus-timer {
+      font-size: 48px;
+      font-weight: 300;
+      font-family: monospace;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .focus-goal {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      max-width: 400px;
+    }
+
+    .blocked-site {
+      background: rgba(255,79,106,0.15);
+      border: 1px solid rgba(255,79,106,0.3);
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin: 8px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="logo">
+        <div class="logo-icon"></div>
+        <span>Swaim</span>
+      </div>
+      
+      <div class="urlbar">
+        <span>🔍</span>
+        <input id="urlInput" placeholder="Enter URL or search..." />
+      </div>
+      
+      <div class="nav-buttons">
+        <button id="backBtn" class="btn" title="Back">←</button>
+        <button id="forwardBtn" class="btn" title="Forward">→</button>
+        <button id="reloadBtn" class="btn" title="Reload">⟳</button>
+        <button id="focusBtn" class="btn" title="Focus Mode">⚡</button>
+        <button id="sidebarBtn" class="btn" title="Product Framework">📋</button>
+      </div>
+    </div>
+
+    <!-- Browser content -->
+    <div class="browser">
+      <webview id="webview" src="https://swaimapp.com" nodeintegration></webview>
+      
+      <!-- Focus overlay -->
+      <div id="focusOverlay" class="focus-overlay">
+        <div class="focus-timer" id="focusTimer">25:00</div>
+        <div class="focus-goal" id="focusGoal">Finish customer discovery research</div>
+        <div id="blockedSites"></div>
+        <button id="endFocusBtn" class="btn" style="margin-top: 30px; padding: 12px 24px; font-size: 16px;">End Session</button>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Swaim Framework</span>
+        <button id="closeSidebar" class="btn">✕</button>
+      </div>
+      
+      <div class="sidebar-tabs">
+        <button class="tab-btn active" data-tab="focus">Focus</button>
+        <button class="tab-btn" data-tab="projects">Projects</button>
+        <button class="tab-btn" data-tab="insights">Insights</button>
+      </div>
+      
+      <div class="tab-content">
+        <!-- Focus tab -->
+        <div id="focusTab" class="tab-pane active">
+          <h3>Next Session</h3>
+          <select id="sessionDuration">
+            <option value="25">25 min</option>
+            <option value="50">50 min</option>
+            <option value="90">90 min</option>
+          </select>
+          <input id="sessionGoal" placeholder="Session goal..." />
+          <button id="startFocusSession">Start Focus</button>
+          
+          <div style="margin-top: 20px;">
+            <h4>Recent Sessions</h4>
+            <div id="recentSessions"></div>
+          </div>
+        </div>
+        
+        <!-- Projects tab -->
+        <div id="projectsTab" class="tab-pane">
+          <h3>Active Project</h3>
+          <div id="activeProject"></div>
+          <button id="addInsightBtn">Add Insight from Current Page</button>
+        </div>
+        
+        <!-- Insights tab -->
+        <div id="insightsTab" class="tab-pane">
+          <h3>Recent Insights</h3>
+          <div id="insightsList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const nw = require('nw.gui');
+    const Store = require('electron-store');
+    const store = new Store();
+
+    // Browser controls
+    const webview = document.getElementById('webview');
+    const urlInput = document.getElementById('urlInput');
+    const backBtn = document.getElementById('backBtn');
+    const forwardBtn = document.getElementById('forwardBtn');
+    const reloadBtn = document.getElementById('reloadBtn');
+    const sidebarBtn = document.getElementById('sidebarBtn');
+    const sidebar = document.getElementById('sidebar');
+    const focusBtn = document.getElementById('focusBtn');
+    const focusOverlay = document.getElementById('focusOverlay');
+
+    // Focus mode
+    let focusActive = false;
+    let focusTimer = null;
+    let focusTimeLeft = 25 * 60;
+    const blockedDomains = ['youtube.com', 'twitter.com', 'reddit.com', 'facebook.com', 'instagram.com'];
+
+    // Navigation
+    urlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        let url = urlInput.value.trim();
+        if (!url.startsWith('http')) {
+          if (url.includes('.')) url = 'https://' + url;
+          else url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+        }
+        webview.src = url;
+      }
+    });
+
+    backBtn.addEventListener('click', () => webview.goBack());
+    forwardBtn.addEventListener('click', () => webview.goForward());
+    reloadBtn.addEventListener('click', () => webview.reload());
+
+    // Sidebar toggle
+    sidebarBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    document.getElementById('closeSidebar').addEventListener('click', () => {
+      sidebar.classList.remove('open');
+    });
+
+    // Focus mode
+    focusBtn.addEventListener('click', toggleFocusMode);
+    document.getElementById('endFocusBtn').addEventListener('click', endFocusMode);
+
+    function toggleFocusMode() {
+      if (focusActive) {
+        endFocusMode();
+      } else {
+        startFocusMode();
+      }
+    }
+
+    function startFocusMode() {
+      focusActive = true;
+      focusOverlay.classList.add('active');
+      focusBtn.classList.add('active');
+      focusBtn.textContent = '⏸️';
+      
+      // Block sites
+      webview.addEventListener('dom-ready', blockNavigation);
+      
+      // Start timer
+      updateTimerDisplay();
+      focusTimer = setInterval(() => {
+        focusTimeLeft--;
+        updateTimerDisplay();
+        if (focusTimeLeft <= 0) {
+          endFocusMode();
+        }
+      }, 1000);
+    }
+
+    function endFocusMode() {
+      focusActive = false;
+      focusOverlay.classList.remove('active');
+      focusBtn.classList.remove('active');
+      focusBtn.textContent = '⚡';
+      
+      clearInterval(focusTimer);
+      webview.removeEventListener('dom-ready', blockNavigation);
+    }
+
+    function blockNavigation() {
+      const currentUrl = webview.src;
+      if (blockedDomains.some(domain => currentUrl.includes(domain))) {
+        document.getElementById('blockedSites').innerHTML = `
+          <div class="blocked-site">
+            🚫 ${currentUrl.split('/')[2]} blocked during focus session
+          </div>
+        `;
+      }
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(focusTimeLeft / 60);
+      const seconds = focusTimeLeft % 60;
+      document.getElementById('focusTimer').textContent = 
+        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Sidebar tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        
+        e.target.classList.add('active');
+        document.getElementById(e.target.dataset.tab + 'Tab').classList.add('active');
+      });
+    });
+
+    // Hotkeys
+    document.addEventListener('keydown', (e) => {
+      // Alt+P - Add insight
+      if (e.altKey && e.key === 'p') {
+        e.preventDefault();
+        addInsight();
+      }
+      
+      // Ctrl+Shift+F - Focus mode
+      if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+        e.preventDefault();
+        toggleFocusMode();
+      }
+    });
+
+    function addInsight() {
+      const url = webview.src;
+      const insight = prompt('Insight/Pain/Idea:', '');
+      if (insight) {
+        store.set('insights', store.get('insights', []).concat({
+          url,
+          text: insight,
+          timestamp: new Date().toISOString(),
+          tags: []
+        }));
+        loadInsights();
+      }
+    }
+
+    function loadInsights() {
+      const insights = store.get('insights', []);
+      document.getElementById('insightsList').innerHTML = insights
+        .slice(-5)
+        .map(i => `<div style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;">${i.text}</div>`)
+        .join('');
+    }
+
+    // Init
+    loadInsights();
+    webview.addEventListener('dom-ready', () => {
+      urlInput.value = webview.src;
+    });
+  </script>
+</body>
+</html>
