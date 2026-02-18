@@ -1,0 +1,40 @@
+{
+  "name": "swaim-browser",
+  "version": "0.1.0",
+  "description": "Браузер для фаундеров: Deep Work + Product Discovery Framework",
+  "main": "index.html",
+  "scripts": {
+    "start": "nw .",
+    "build": "nw-builder . -p linux64,osx64,win64 -o dist/",
+    "build:linux": "nw-builder . -p linux64 -o dist/",
+    "build:mac": "nw-builder . -p osx64 -o dist/",
+    "build:win": "nw-builder . -p win64 -o dist/"
+  },
+  "window": {
+    "title": "Swaim Browser",
+    "width": 1400,
+    "height": 900,
+    "min_width": 800,
+    "min_height": 600,
+    "icon": "assets/icon.png",
+    "frame": true,
+    "toolbar": false
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "nw": "^0.85.0",
+    "nw-builder": "^4.7.4"
+  },
+  "keywords": [
+    "browser",
+    "deep-work",
+    "focus",
+    "productivity",
+    "product-discovery",
+    "founder-tools"
+  ],
+  "author": "Swaim Team",
+  "license": "MIT"
+}
