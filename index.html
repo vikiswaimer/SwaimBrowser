@@ -321,165 +321,480 @@
   </div>
 
   <script>
+    'use strict';
+
     const nw = require('nw.gui');
     const Store = require('electron-store');
     const store = new Store();
 
-    // Browser controls
-    const webview = document.getElementById('webview');
-    const urlInput = document.getElementById('urlInput');
-    const backBtn = document.getElementById('backBtn');
-    const forwardBtn = document.getElementById('forwardBtn');
-    const reloadBtn = document.getElementById('reloadBtn');
-    const sidebarBtn = document.getElementById('sidebarBtn');
-    const sidebar = document.getElementById('sidebar');
-    const focusBtn = document.getElementById('focusBtn');
-    const focusOverlay = document.getElementById('focusOverlay');
+    // =========================================================================
+    // КОНСТАНТЫ
+    // Именованные константы вместо магических чисел (Code Complete, гл. 12)
+    // =========================================================================
+    const CONFIG = Object.freeze({
+      DEFAULT_FOCUS_DURATION_MINUTES: 25,
+      TIMER_INTERVAL_MS: 1000,
+      SECONDS_PER_MINUTE: 60,
+      RECENT_INSIGHTS_COUNT: 5,
+      DEFAULT_SEARCH_ENGINE: 'https://www.google.com/search?q=',
+      DEFAULT_PROTOCOL: 'https://',
+      BLOCKED_DOMAINS: Object.freeze([
+        'youtube.com',
+        'twitter.com',
+        'reddit.com',
+        'facebook.com',
+        'instagram.com'
+      ]),
+      ICONS: Object.freeze({
+        FOCUS_ACTIVE: '⏸️',
+        FOCUS_INACTIVE: '⚡'
+      }),
+      CSS_CLASSES: Object.freeze({
+        ACTIVE: 'active',
+        OPEN: 'open'
+      })
+    });
 
-    // Focus mode
-    let focusActive = false;
-    let focusTimer = null;
-    let focusTimeLeft = 25 * 60;
-    const blockedDomains = ['youtube.com', 'twitter.com', 'reddit.com', 'facebook.com', 'instagram.com'];
+    // =========================================================================
+    // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+    // Утилиты с защитным программированием (Code Complete, гл. 8)
+    // =========================================================================
 
-    // Navigation
-    urlInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        let url = urlInput.value.trim();
-        if (!url.startsWith('http')) {
-          if (url.includes('.')) url = 'https://' + url;
-          else url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-        }
-        webview.src = url;
+    function getElement(elementId) {
+      const element = document.getElementById(elementId);
+      if (!element) {
+        console.warn(`Element with id "${elementId}" not found`);
       }
-    });
+      return element;
+    }
 
-    backBtn.addEventListener('click', () => webview.goBack());
-    forwardBtn.addEventListener('click', () => webview.goForward());
-    reloadBtn.addEventListener('click', () => webview.reload());
+    function getElements(selector) {
+      return document.querySelectorAll(selector);
+    }
 
-    // Sidebar toggle
-    sidebarBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-    });
-
-    document.getElementById('closeSidebar').addEventListener('click', () => {
-      sidebar.classList.remove('open');
-    });
-
-    // Focus mode
-    focusBtn.addEventListener('click', toggleFocusMode);
-    document.getElementById('endFocusBtn').addEventListener('click', endFocusMode);
-
-    function toggleFocusMode() {
-      if (focusActive) {
-        endFocusMode();
-      } else {
-        startFocusMode();
+    function extractDomainFromUrl(url) {
+      if (!url || typeof url !== 'string') {
+        return '';
       }
+      const parts = url.split('/');
+      return parts.length > 2 ? parts[2] : '';
     }
 
-    function startFocusMode() {
-      focusActive = true;
-      focusOverlay.classList.add('active');
-      focusBtn.classList.add('active');
-      focusBtn.textContent = '⏸️';
-      
-      // Block sites
-      webview.addEventListener('dom-ready', blockNavigation);
-      
-      // Start timer
-      updateTimerDisplay();
-      focusTimer = setInterval(() => {
-        focusTimeLeft--;
-        updateTimerDisplay();
-        if (focusTimeLeft <= 0) {
-          endFocusMode();
+    function formatTimeDisplay(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / CONFIG.SECONDS_PER_MINUTE);
+      const seconds = totalSeconds % CONFIG.SECONDS_PER_MINUTE;
+      const paddedSeconds = seconds.toString().padStart(2, '0');
+      return `${minutes}:${paddedSeconds}`;
+    }
+
+    function normalizeUrl(inputValue) {
+      const trimmedInput = inputValue.trim();
+
+      if (!trimmedInput) {
+        return null;
+      }
+
+      const hasProtocol = trimmedInput.startsWith('http');
+      if (hasProtocol) {
+        return trimmedInput;
+      }
+
+      const looksLikeUrl = trimmedInput.includes('.');
+      if (looksLikeUrl) {
+        return CONFIG.DEFAULT_PROTOCOL + trimmedInput;
+      }
+
+      return CONFIG.DEFAULT_SEARCH_ENGINE + encodeURIComponent(trimmedInput);
+    }
+
+    function isBlockedDomain(url) {
+      if (!url) {
+        return false;
+      }
+      return CONFIG.BLOCKED_DOMAINS.some(domain => url.includes(domain));
+    }
+
+    // =========================================================================
+    // КЭШИРОВАНИЕ DOM-ЭЛЕМЕНТОВ
+    // Избегаем повторных querySelector (Code Complete, гл. 24 — DRY)
+    // =========================================================================
+    const DOM = {
+      webview: null,
+      urlInput: null,
+      sidebar: null,
+      focusBtn: null,
+      focusOverlay: null,
+      focusTimer: null,
+      focusGoal: null,
+      blockedSites: null,
+      insightsList: null,
+
+      init() {
+        this.webview = getElement('webview');
+        this.urlInput = getElement('urlInput');
+        this.sidebar = getElement('sidebar');
+        this.focusBtn = getElement('focusBtn');
+        this.focusOverlay = getElement('focusOverlay');
+        this.focusTimer = getElement('focusTimer');
+        this.focusGoal = getElement('focusGoal');
+        this.blockedSites = getElement('blockedSites');
+        this.insightsList = getElement('insightsList');
+      }
+    };
+
+    // =========================================================================
+    // МОДУЛЬ НАВИГАЦИИ
+    // Одна ответственность — навигация браузера (Code Complete, гл. 7)
+    // =========================================================================
+    const NavigationModule = {
+      init() {
+        this.bindUrlInput();
+        this.bindNavigationButtons();
+        this.bindUrlSync();
+      },
+
+      bindUrlInput() {
+        if (!DOM.urlInput || !DOM.webview) return;
+
+        DOM.urlInput.addEventListener('keypress', (event) => {
+          if (event.key !== 'Enter') return;
+
+          const normalizedUrl = normalizeUrl(DOM.urlInput.value);
+          if (normalizedUrl) {
+            DOM.webview.src = normalizedUrl;
+          }
+        });
+      },
+
+      bindNavigationButtons() {
+        if (!DOM.webview) return;
+
+        const backBtn = getElement('backBtn');
+        const forwardBtn = getElement('forwardBtn');
+        const reloadBtn = getElement('reloadBtn');
+
+        if (backBtn) {
+          backBtn.addEventListener('click', () => DOM.webview.goBack());
         }
-      }, 1000);
-    }
+        if (forwardBtn) {
+          forwardBtn.addEventListener('click', () => DOM.webview.goForward());
+        }
+        if (reloadBtn) {
+          reloadBtn.addEventListener('click', () => DOM.webview.reload());
+        }
+      },
 
-    function endFocusMode() {
-      focusActive = false;
-      focusOverlay.classList.remove('active');
-      focusBtn.classList.remove('active');
-      focusBtn.textContent = '⚡';
-      
-      clearInterval(focusTimer);
-      webview.removeEventListener('dom-ready', blockNavigation);
-    }
+      bindUrlSync() {
+        if (!DOM.webview || !DOM.urlInput) return;
 
-    function blockNavigation() {
-      const currentUrl = webview.src;
-      if (blockedDomains.some(domain => currentUrl.includes(domain))) {
-        document.getElementById('blockedSites').innerHTML = `
+        DOM.webview.addEventListener('dom-ready', () => {
+          DOM.urlInput.value = DOM.webview.src || '';
+        });
+      }
+    };
+
+    // =========================================================================
+    // МОДУЛЬ ФОКУСИРОВКИ
+    // Инкапсуляция состояния в объект (Code Complete, гл. 10)
+    // =========================================================================
+    const FocusModule = {
+      state: {
+        isActive: false,
+        timerIntervalId: null,
+        remainingSeconds: 0
+      },
+
+      init() {
+        this.resetTimer();
+        this.bindControls();
+      },
+
+      resetTimer() {
+        const durationMinutes = CONFIG.DEFAULT_FOCUS_DURATION_MINUTES;
+        this.state.remainingSeconds = durationMinutes * CONFIG.SECONDS_PER_MINUTE;
+      },
+
+      bindControls() {
+        if (DOM.focusBtn) {
+          DOM.focusBtn.addEventListener('click', () => this.toggle());
+        }
+
+        const endFocusBtn = getElement('endFocusBtn');
+        if (endFocusBtn) {
+          endFocusBtn.addEventListener('click', () => this.stop());
+        }
+      },
+
+      toggle() {
+        if (this.state.isActive) {
+          this.stop();
+        } else {
+          this.start();
+        }
+      },
+
+      start() {
+        this.state.isActive = true;
+        this.activateOverlay();
+        this.updateButtonState(true);
+        this.startBlockingNavigation();
+        this.startTimer();
+      },
+
+      stop() {
+        this.state.isActive = false;
+        this.deactivateOverlay();
+        this.updateButtonState(false);
+        this.stopBlockingNavigation();
+        this.stopTimer();
+        this.resetTimer();
+      },
+
+      activateOverlay() {
+        if (DOM.focusOverlay) {
+          DOM.focusOverlay.classList.add(CONFIG.CSS_CLASSES.ACTIVE);
+        }
+      },
+
+      deactivateOverlay() {
+        if (DOM.focusOverlay) {
+          DOM.focusOverlay.classList.remove(CONFIG.CSS_CLASSES.ACTIVE);
+        }
+      },
+
+      updateButtonState(isActive) {
+        if (!DOM.focusBtn) return;
+
+        if (isActive) {
+          DOM.focusBtn.classList.add(CONFIG.CSS_CLASSES.ACTIVE);
+          DOM.focusBtn.textContent = CONFIG.ICONS.FOCUS_ACTIVE;
+        } else {
+          DOM.focusBtn.classList.remove(CONFIG.CSS_CLASSES.ACTIVE);
+          DOM.focusBtn.textContent = CONFIG.ICONS.FOCUS_INACTIVE;
+        }
+      },
+
+      startTimer() {
+        this.updateTimerDisplay();
+
+        this.state.timerIntervalId = setInterval(() => {
+          this.state.remainingSeconds--;
+          this.updateTimerDisplay();
+
+          if (this.state.remainingSeconds <= 0) {
+            this.stop();
+          }
+        }, CONFIG.TIMER_INTERVAL_MS);
+      },
+
+      stopTimer() {
+        if (this.state.timerIntervalId) {
+          clearInterval(this.state.timerIntervalId);
+          this.state.timerIntervalId = null;
+        }
+      },
+
+      updateTimerDisplay() {
+        if (DOM.focusTimer) {
+          DOM.focusTimer.textContent = formatTimeDisplay(this.state.remainingSeconds);
+        }
+      },
+
+      startBlockingNavigation() {
+        if (DOM.webview) {
+          DOM.webview.addEventListener('dom-ready', this.handleNavigationBlock);
+        }
+      },
+
+      stopBlockingNavigation() {
+        if (DOM.webview) {
+          DOM.webview.removeEventListener('dom-ready', this.handleNavigationBlock);
+        }
+      },
+
+      handleNavigationBlock() {
+        if (!DOM.webview || !DOM.blockedSites) return;
+
+        const currentUrl = DOM.webview.src;
+        if (!isBlockedDomain(currentUrl)) return;
+
+        const domain = extractDomainFromUrl(currentUrl);
+        DOM.blockedSites.innerHTML = `
           <div class="blocked-site">
-            🚫 ${currentUrl.split('/')[2]} blocked during focus session
+            🚫 ${domain} blocked during focus session
           </div>
         `;
       }
-    }
+    };
 
-    function updateTimerDisplay() {
-      const minutes = Math.floor(focusTimeLeft / 60);
-      const seconds = focusTimeLeft % 60;
-      document.getElementById('focusTimer').textContent = 
-        `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }
+    // =========================================================================
+    // МОДУЛЬ САЙДБАРА
+    // =========================================================================
+    const SidebarModule = {
+      init() {
+        this.bindToggle();
+        this.bindTabs();
+      },
 
-    // Sidebar tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-        
-        e.target.classList.add('active');
-        document.getElementById(e.target.dataset.tab + 'Tab').classList.add('active');
-      });
-    });
+      bindToggle() {
+        const sidebarBtn = getElement('sidebarBtn');
+        const closeSidebarBtn = getElement('closeSidebar');
 
-    // Hotkeys
-    document.addEventListener('keydown', (e) => {
-      // Alt+P - Add insight
-      if (e.altKey && e.key === 'p') {
-        e.preventDefault();
-        addInsight();
+        if (sidebarBtn && DOM.sidebar) {
+          sidebarBtn.addEventListener('click', () => this.toggle());
+        }
+
+        if (closeSidebarBtn && DOM.sidebar) {
+          closeSidebarBtn.addEventListener('click', () => this.close());
+        }
+      },
+
+      toggle() {
+        if (DOM.sidebar) {
+          DOM.sidebar.classList.toggle(CONFIG.CSS_CLASSES.OPEN);
+        }
+      },
+
+      close() {
+        if (DOM.sidebar) {
+          DOM.sidebar.classList.remove(CONFIG.CSS_CLASSES.OPEN);
+        }
+      },
+
+      bindTabs() {
+        const tabButtons = getElements('.tab-btn');
+        const tabPanes = getElements('.tab-pane');
+
+        tabButtons.forEach(tabButton => {
+          tabButton.addEventListener('click', (event) => {
+            this.deactivateAllTabs(tabButtons, tabPanes);
+            this.activateTab(event.target);
+          });
+        });
+      },
+
+      deactivateAllTabs(tabButtons, tabPanes) {
+        tabButtons.forEach(button => {
+          button.classList.remove(CONFIG.CSS_CLASSES.ACTIVE);
+        });
+        tabPanes.forEach(pane => {
+          pane.classList.remove(CONFIG.CSS_CLASSES.ACTIVE);
+        });
+      },
+
+      activateTab(tabButton) {
+        tabButton.classList.add(CONFIG.CSS_CLASSES.ACTIVE);
+
+        const tabName = tabButton.dataset.tab;
+        const tabPane = getElement(tabName + 'Tab');
+        if (tabPane) {
+          tabPane.classList.add(CONFIG.CSS_CLASSES.ACTIVE);
+        }
       }
-      
-      // Ctrl+Shift+F - Focus mode
-      if (e.ctrlKey && e.shiftKey && e.key === 'F') {
-        e.preventDefault();
-        toggleFocusMode();
-      }
-    });
+    };
 
-    function addInsight() {
-      const url = webview.src;
-      const insight = prompt('Insight/Pain/Idea:', '');
-      if (insight) {
-        store.set('insights', store.get('insights', []).concat({
-          url,
-          text: insight,
+    // =========================================================================
+    // МОДУЛЬ ИНСАЙТОВ
+    // =========================================================================
+    const InsightsModule = {
+      init() {
+        this.loadAndDisplay();
+      },
+
+      add() {
+        if (!DOM.webview) return;
+
+        const currentUrl = DOM.webview.src;
+        const insightText = prompt('Insight/Pain/Idea:', '');
+
+        if (!insightText) return;
+
+        const newInsight = this.createInsight(currentUrl, insightText);
+        this.saveInsight(newInsight);
+        this.loadAndDisplay();
+      },
+
+      createInsight(url, text) {
+        return {
+          url: url,
+          text: text,
           timestamp: new Date().toISOString(),
           tags: []
-        }));
-        loadInsights();
+        };
+      },
+
+      saveInsight(insight) {
+        const existingInsights = store.get('insights', []);
+        const updatedInsights = existingInsights.concat(insight);
+        store.set('insights', updatedInsights);
+      },
+
+      loadAndDisplay() {
+        if (!DOM.insightsList) return;
+
+        const allInsights = store.get('insights', []);
+        const recentInsights = allInsights.slice(-CONFIG.RECENT_INSIGHTS_COUNT);
+
+        DOM.insightsList.innerHTML = recentInsights
+          .map(insight => this.renderInsightItem(insight))
+          .join('');
+      },
+
+      renderInsightItem(insight) {
+        const escapedText = this.escapeHtml(insight.text);
+        return `<div style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;">${escapedText}</div>`;
+      },
+
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
       }
+    };
+
+    // =========================================================================
+    // МОДУЛЬ ГОРЯЧИХ КЛАВИШ
+    // =========================================================================
+    const HotkeysModule = {
+      init() {
+        document.addEventListener('keydown', (event) => this.handleKeydown(event));
+      },
+
+      handleKeydown(event) {
+        if (this.isAddInsightHotkey(event)) {
+          event.preventDefault();
+          InsightsModule.add();
+        }
+
+        if (this.isToggleFocusHotkey(event)) {
+          event.preventDefault();
+          FocusModule.toggle();
+        }
+      },
+
+      isAddInsightHotkey(event) {
+        return event.altKey && event.key === 'p';
+      },
+
+      isToggleFocusHotkey(event) {
+        return event.ctrlKey && event.shiftKey && event.key === 'F';
+      }
+    };
+
+    // =========================================================================
+    // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+    // Единая точка входа (Code Complete, гл. 31)
+    // =========================================================================
+    function initializeApplication() {
+      DOM.init();
+      NavigationModule.init();
+      FocusModule.init();
+      SidebarModule.init();
+      InsightsModule.init();
+      HotkeysModule.init();
     }
 
-    function loadInsights() {
-      const insights = store.get('insights', []);
-      document.getElementById('insightsList').innerHTML = insights
-        .slice(-5)
-        .map(i => `<div style="padding:8px;border-bottom:1px solid var(--border);font-size:12px;">${i.text}</div>`)
-        .join('');
-    }
-
-    // Init
-    loadInsights();
-    webview.addEventListener('dom-ready', () => {
-      urlInput.value = webview.src;
-    });
+    initializeApplication();
   </script>
 </body>
 </html>
