@@ -2,6 +2,8 @@
 
 Единая терминология для разработки и документации.
 
+> **Скоуп v0.1:** см. [PRD.md](./PRD.md) — что делаем и что НЕ делаем
+
 ---
 
 ## Основные компоненты
@@ -116,4 +118,9 @@
 
 ---
 
-*См. также: [DEV-CHECKLIST.md](./DEV-CHECKLIST.md), [KNOWN-ISSUES.md](./KNOWN-ISSUES.md)*
+---
+
+*См. также:*
+- *[PRD.md](./PRD.md) — скоуп и приоритеты v0.1*
+- *[DEV-CHECKLIST.md](./DEV-CHECKLIST.md) — чеклист перед коммитом*
+- *[KNOWN-ISSUES.md](./KNOWN-ISSUES.md) — известные ограничения*
