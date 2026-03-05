@@ -2,186 +2,233 @@
 
 ## Обзор
 
-Swaim Browser — это desktop-приложение на базе NW.js/Electron, предназначенное для продуктивной работы. Приложение сочетает браузер с системой фокусировки и управления проектами.
+Swaim Browser — это desktop-приложение на базе **Electron** с **React** UI, предназначенное для продуктивной работы. Приложение сочетает браузер с системой фокусировки и управления проектами.
+
+## Технологический стек
+
+| Компонент | Технология |
+|-----------|------------|
+| Desktop Runtime | Electron 28 |
+| UI Framework | React 18 + TypeScript |
+| State Management | Zustand |
+| Build Tool | Vite |
+| Packaging | electron-builder |
+| Storage | electron-store |
 
 ## Структура проекта
 
 ```
-/
-├── index.html          # Главный файл приложения (UI + логика)
-├── docs/               # Документация
-│   ├── ARCHITECTURE.md # Этот файл
-│   ├── DATA.md         # Формат данных и API store
-│   ├── requirements.md # Функциональные требования
-│   ├── DEV-CHECKLIST.md
-│   ├── GLOSSARY.md
-│   └── KNOWN-ISSUES.md
-└── COMPETITOR_ANALYSIS.md
+swaim-browser/
+├── electron/               # Electron main process
+│   ├── main.ts            # Главный процесс
+│   └── preload.ts         # Preload скрипт (IPC)
+├── src/                   # React приложение
+│   ├── components/        # UI компоненты
+│   │   ├── TopBar/        # Панель навигации
+│   │   ├── Sidebar/       # Боковая панель
+│   │   ├── BrowserView/   # Webview
+│   │   └── FocusOverlay/  # Оверлей фокусировки
+│   ├── store/             # Zustand stores
+│   ├── shared/            # Shared код
+│   ├── hooks/             # React хуки
+│   ├── lib/               # Сервисы
+│   └── styles/            # CSS
+├── docs/                  # Документация
+└── index.html             # Entry point
 ```
 
 ## Архитектурные слои
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    UI Layer                         │
-│  ┌──────────┐  ┌──────────┐  ┌──────────────────┐  │
-│  │  Topbar  │  │  Browser │  │     Sidebar      │  │
-│  │  (nav)   │  │ (webview)│  │ (tabs: Focus,    │  │
-│  │          │  │          │  │  Projects,       │  │
-│  │          │  │          │  │  Insights)       │  │
-│  └──────────┘  └──────────┘  └──────────────────┘  │
-├─────────────────────────────────────────────────────┤
-│                  Logic Layer                        │
-│  ┌────────────┐  ┌──────────────┐  ┌────────────┐  │
-│  │ Navigation │  │  Focus Mode  │  │  Insights  │  │
-│  │  Manager   │  │   Manager    │  │  Manager   │  │
-│  └────────────┘  └──────────────┘  └────────────┘  │
-├─────────────────────────────────────────────────────┤
-│                  Data Layer                         │
-│  ┌─────────────────────────────────────────────┐   │
-│  │            electron-store                    │   │
-│  │         (локальное хранилище)               │   │
-│  └─────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                     Presentation Layer                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────────────┐          │
+│  │  TopBar  │  │ Browser  │  │     Sidebar      │          │
+│  │          │  │  View    │  │  (Focus/Projects │          │
+│  │          │  │          │  │   /Insights)     │          │
+│  └────┬─────┘  └────┬─────┘  └────────┬─────────┘          │
+│       │             │                  │                    │
+├───────┴─────────────┴──────────────────┴────────────────────┤
+│                      State Layer (Zustand)                   │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
+│  │ browserStore │  │  focusStore  │  │insightsStore │       │
+│  └──────────────┘  └──────────────┘  └──────────────┘       │
+├─────────────────────────────────────────────────────────────┤
+│                      Service Layer                           │
+│  ┌─────────────────────────────────────────────────┐        │
+│  │              Platform Abstraction               │        │
+│  │   (storage, notifications, platform detection)  │        │
+│  └─────────────────────────────────────────────────┘        │
+├─────────────────────────────────────────────────────────────┤
+│                    Electron IPC Bridge                       │
+│  ┌─────────────┐                  ┌─────────────┐           │
+│  │   Preload   │◄──────IPC──────►│    Main     │           │
+│  │   Script    │                  │   Process   │           │
+│  └─────────────┘                  └─────────────┘           │
+│                                          │                  │
+│                                          ▼                  │
+│                                   electron-store            │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+## Electron Process Model
+
+### Main Process (`electron/main.ts`)
+- Создание BrowserWindow
+- IPC handlers для store, window controls
+- Системные интеграции (трей, меню)
+
+### Preload Script (`electron/preload.ts`)
+- Безопасный мост между main и renderer
+- Экспорт `window.electron` API:
+  - `store.get/set/delete/clear`
+  - `window.minimize/maximize/close`
+  - `app.getVersion/getPlatform`
+
+### Renderer Process (`src/`)
+- React приложение
+- Не имеет прямого доступа к Node.js
+- Использует `window.electron` для системных операций
 
 ## UI-компоненты
 
-### 1. Topbar (`.topbar`)
-Верхняя панель навигации, высота 52px.
+### TopBar
+| Элемент | Функция |
+|---------|---------|
+| Logo | Брендинг |
+| Navigation Buttons | Back, Forward, Reload |
+| URL Bar | Навигация и поиск |
+| Focus Button | Переключение Focus Mode |
+| Sidebar Button | Открытие/закрытие сайдбара |
 
-| Элемент | ID/Class | Описание |
-|---------|----------|----------|
-| Logo | `.logo` | Логотип Swaim |
-| URL Bar | `.urlbar`, `#urlInput` | Поле ввода URL/поиска |
-| Back Button | `#backBtn` | Навигация назад |
-| Forward Button | `#forwardBtn` | Навигация вперёд |
-| Reload Button | `#reloadBtn` | Перезагрузка страницы |
-| Focus Button | `#focusBtn` | Включение Focus Mode |
-| Sidebar Button | `#sidebarBtn` | Открытие/закрытие сайдбара |
+### BrowserView
+| Элемент | Функция |
+|---------|---------|
+| Webview | Отображение веб-контента |
+| FocusOverlay | Полноэкранный таймер |
 
-### 2. Browser (`.browser`)
-Основная область просмотра веб-контента.
+### Sidebar
+| Вкладка | Контент |
+|---------|---------|
+| Focus | Настройка сессий, история |
+| Projects | Управление проектами |
+| Insights | Список инсайтов |
 
-| Элемент | ID/Class | Описание |
-|---------|----------|----------|
-| Webview | `#webview` | Встроенный браузер (webview) |
-| Focus Overlay | `#focusOverlay` | Оверлей режима фокусировки |
+## State Management (Zustand)
 
-### 3. Sidebar (`.sidebar`)
-Выдвижная панель справа, ширина 320px.
-
-| Вкладка | Tab ID | Content ID | Описание |
-|---------|--------|------------|----------|
-| Focus | `data-tab="focus"` | `#focusTab` | Настройка сессий фокусировки |
-| Projects | `data-tab="projects"` | `#projectsTab` | Управление проектами |
-| Insights | `data-tab="insights"` | `#insightsTab` | Список инсайтов |
-
-### 4. Focus Overlay (`.focus-overlay`)
-Полноэкранный оверлей для режима фокусировки.
-
-| Элемент | ID | Описание |
-|---------|-----|----------|
-| Timer | `#focusTimer` | Обратный отсчёт (25:00 по умолчанию) |
-| Goal | `#focusGoal` | Текущая цель сессии |
-| Blocked Sites | `#blockedSites` | Список заблокированных сайтов |
-| End Button | `#endFocusBtn` | Завершение сессии |
-
-## Модули логики
-
-### Navigation Manager
-Управление навигацией браузера.
-
-```javascript
-// Обработка URL
-urlInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    // Автодополнение протокола
-    // Поиск Google для не-URL
-  }
-});
-
-// Кнопки навигации
-backBtn → webview.goBack()
-forwardBtn → webview.goForward()
-reloadBtn → webview.reload()
-```
-
-### Focus Mode Manager
-Управление режимом фокусировки с блокировкой отвлекающих сайтов.
-
-**Состояние:**
-- `focusActive: boolean` — активен ли режим
-- `focusTimer: interval` — таймер обратного отсчёта
-- `focusTimeLeft: number` — секунды до конца
-- `blockedDomains: string[]` — список блокируемых доменов
-
-**Заблокированные домены по умолчанию:**
-- youtube.com
-- twitter.com
-- reddit.com
-- facebook.com
-- instagram.com
-
-**Функции:**
-- `toggleFocusMode()` — переключение режима
-- `startFocusMode()` — старт сессии
-- `endFocusMode()` — завершение сессии
-- `blockNavigation()` — блокировка запрещённых сайтов
-- `updateTimerDisplay()` — обновление таймера на UI
-
-### Insights Manager
-Сохранение заметок и инсайтов с привязкой к URL.
-
-**Функции:**
-- `addInsight()` — добавление нового инсайта
-- `loadInsights()` — загрузка и отображение инсайтов
-
-## Горячие клавиши
-
-| Комбинация | Действие |
-|------------|----------|
-| `Alt + P` | Добавить инсайт с текущей страницы |
-| `Ctrl + Shift + F` | Переключить Focus Mode |
-
-## Зависимости
-
-| Пакет | Назначение |
-|-------|------------|
-| `nw.gui` | NW.js GUI API |
-| `electron-store` | Локальное хранилище данных |
-
-## CSS-переменные (тема)
-
-```css
-:root {
-  --bg: #0a0b12;           /* Фон приложения */
-  --panel: #11151f;        /* Фон панелей */
-  --accent: #4f8cff;       /* Акцентный цвет */
-  --text: #f5f7fa;         /* Основной текст */
-  --text-muted: #8a94a6;   /* Приглушённый текст */
-  --border: rgba(255,255,255,0.08); /* Границы */
+### browserStore
+```typescript
+{
+  currentUrl: string;
+  inputValue: string;
+  isLoading: boolean;
+  canGoBack: boolean;
+  canGoForward: boolean;
 }
 ```
+
+### focusStore
+```typescript
+{
+  isActive: boolean;
+  remainingSeconds: number;
+  currentGoal: string;
+  selectedDuration: 25 | 50 | 90;
+  sessions: FocusSession[];
+}
+```
+
+### insightsStore
+```typescript
+{
+  insights: Insight[];
+  recentInsights: Insight[];
+}
+```
+
+### sidebarStore
+```typescript
+{
+  isOpen: boolean;
+  activeTab: 'focus' | 'projects' | 'insights';
+}
+```
+
+## Shared Layer
+
+### Цель
+Код в `src/shared/` предназначен для переиспользования между платформами (Desktop, Mobile, Web).
+
+### Модули
+| Модуль | Содержимое |
+|--------|------------|
+| `constants.ts` | APP_CONFIG, FOCUS_CONFIG, BLOCKED_DOMAINS |
+| `types.ts` | Insight, FocusSession, Project, UserSettings |
+| `utils.ts` | formatTimeDisplay, normalizeUrl, isBlockedDomain |
+| `platform.ts` | PlatformAdapter, detectPlatform |
 
 ## Data Flow
 
 ```
-User Action → Event Handler → Logic Module → Store (persistence)
-                                  ↓
-                            UI Update
+User Action → React Component → Zustand Action → State Update
+                                      │
+                                      ▼
+                              IPC (if persistence)
+                                      │
+                                      ▼
+                              electron-store
 ```
 
 ### Пример: Добавление инсайта
-1. Пользователь нажимает `Alt + P`
-2. `keydown` handler вызывает `addInsight()`
-3. Открывается `prompt()` для ввода текста
-4. Данные сохраняются в `store.set('insights', ...)`
-5. `loadInsights()` обновляет UI
+1. Пользователь нажимает `Alt+P`
+2. `App.tsx` перехватывает событие
+3. `insightsStore.addInsight()` обновляет state
+4. `storage.set()` сохраняет через IPC
+5. UI обновляется реактивно
 
-### Пример: Старт Focus Mode
-1. Пользователь нажимает кнопку `#focusBtn`
-2. `startFocusMode()` активирует оверлей
-3. Запускается `setInterval` для таймера
-4. Навешивается listener на webview для блокировки сайтов
-5. При переходе на заблокированный сайт — показывается предупреждение
+## CSS Architecture
+
+### CSS Variables (Theme)
+```css
+:root {
+  --bg-primary: #0a0b12;
+  --bg-secondary: #11151f;
+  --accent-primary: #4f8cff;
+  --text-primary: #f5f7fa;
+  --text-secondary: #a1a8b8;
+  --border-primary: rgba(255,255,255,0.08);
+}
+```
+
+### CSS Modules
+Каждый компонент имеет свой `.module.css` файл для изоляции стилей.
+
+## Горячие клавиши
+
+| Комбинация | Действие | Handler |
+|------------|----------|---------|
+| `Alt + P` | Добавить инсайт | App.tsx |
+| `Ctrl + Shift + F` | Toggle Focus Mode | App.tsx |
+| `Enter` (в URL bar) | Навигация | TopBar.tsx |
+
+## Подготовка к Mobile
+
+### Переиспользуемый код
+- `src/shared/*` — 100% переиспользуется
+- `src/store/*` — переиспользуется с минимальными изменениями
+- `src/hooks/usePlatform.ts` — определяет платформу
+
+### Платформо-специфичный код
+- `src/components/*` — React Web компоненты
+- `electron/*` — только для Electron
+
+### React Native интеграция
+```
+swaim-browser/
+├── src/
+│   └── shared/          # ← Используется в RN
+│   └── store/           # ← Используется в RN
+└── mobile/              # React Native приложение (будущее)
+    └── src/
+        └── components/  # Нативные компоненты
+```
