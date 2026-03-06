@@ -1,31 +1,19 @@
 {
   "name": "swaim-browser",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Браузер для фаундеров: Deep Work + Product Discovery Framework",
-  "main": "index.html",
+  "main": "dist-electron/main.js",
+  "type": "module",
   "scripts": {
-    "start": "nw .",
-    "build": "nw-builder . -p linux64,osx64,win64 -o dist/",
-    "build:linux": "nw-builder . -p linux64 -o dist/",
-    "build:mac": "nw-builder . -p osx64 -o dist/",
-    "build:win": "nw-builder . -p win64 -o dist/"
-  },
-  "window": {
-    "title": "Swaim Browser",
-    "width": 1400,
-    "height": 900,
-    "min_width": 800,
-    "min_height": 600,
-    "icon": "assets/icon.png",
-    "frame": true,
-    "toolbar": false
-  },
-  "dependencies": {
-    "electron-store": "^8.1.0"
-  },
-  "devDependencies": {
-    "nw": "^0.85.0",
-    "nw-builder": "^4.7.4"
+    "dev": "vite",
+    "build": "tsc && vite build && electron-builder",
+    "build:linux": "tsc && vite build && electron-builder --linux",
+    "build:mac": "tsc && vite build && electron-builder --mac",
+    "build:win": "tsc && vite build && electron-builder --win",
+    "preview": "vite preview",
+    "electron:dev": "vite build && electron .",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "browser",
@@ -33,8 +21,49 @@
     "focus",
     "productivity",
     "product-discovery",
-    "founder-tools"
+    "founder-tools",
+    "electron"
   ],
   "author": "Swaim Team",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "zustand": "^4.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "electron": "^28.2.0",
+    "electron-builder": "^24.13.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "vite-plugin-electron": "^0.28.0",
+    "vite-plugin-electron-renderer": "^0.14.5"
+  },
+  "build": {
+    "appId": "com.swaim.browser",
+    "productName": "Swaim Browser",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist",
+      "dist-electron"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Network"
+    }
+  }
 }
