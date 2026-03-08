@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swaim Browser — UI Preview</title>
+  <style>
+    :root {
+      --bg-primary: #0a0b12;
+      --bg-secondary: #11151f;
+      --bg-tertiary: #1a1f2e;
+      --bg-elevated: rgba(255, 255, 255, 0.03);
+      --bg-hover: rgba(255, 255, 255, 0.06);
+      --accent-primary: #4f8cff;
+      --accent-secondary: #7b6aff;
+      --accent-gradient: linear-gradient(135deg, #4f8cff, #7b6aff);
+      --accent-muted: rgba(79, 140, 255, 0.15);
+      --text-primary: #f5f7fa;
+      --text-secondary: #a1a8b8;
+      --text-muted: #6b7280;
+      --border-primary: rgba(255, 255, 255, 0.08);
+      --border-secondary: rgba(255, 255, 255, 0.04);
+      --topbar-height: 52px;
+      --sidebar-width: 320px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      height: var(--topbar-height);
+      background: rgba(10, 11, 18, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-primary);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+
+    .traffic-lights {
+      display: flex;
+      gap: 8px;
+      padding-right: 12px;
+    }
+
+    .traffic-light {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .traffic-light.red { background: #ff5f57; }
+    .traffic-light.yellow { background: #febc2e; }
+    .traffic-light.green { background: #28c840; }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      width: 20px;
+      height: 20px;
+      background: var(--accent-gradient);
+      border-radius: 4px;
+    }
+
+    .logo-text {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--accent-primary);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .url-bar {
+      flex: 1;
+      max-width: 600px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-primary);
+      border-radius: 9999px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .url-bar:focus-within {
+      border-color: var(--accent-primary);
+      background: var(--bg-hover);
+    }
+
+    .search-icon {
+      color: var(--text-muted);
+    }
+
+    .url-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 12px;
+      outline: none;
+    }
+
+    .url-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .actions {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: var(--bg-elevated);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
+    }
+
+    .action-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .action-btn.active {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    /* MAIN CONTENT */
+    .app-content {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .browser-view {
+      flex: 1;
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .browser-placeholder {
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .browser-placeholder h2 {
+      font-size: 24px;
+      font-weight: 300;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+
+    .browser-placeholder p {
+      font-size: 14px;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border-primary);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar.closed {
+      transform: translateX(100%);
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .sidebar-header {
+      height: var(--topbar-height);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-primary);
+    }
+
+    .sidebar-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .close-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-primary);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-secondary);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .duration-picker {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .duration-btn {
+      flex: 1;
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-primary);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    .duration-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .duration-btn.selected {
+      background: var(--accent-muted);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .input {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-primary);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 12px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .primary-btn {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--accent-primary);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    .primary-btn:hover {
+      filter: brightness(1.1);
+    }
+
+    .sub-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .session-item {
+      padding: 12px;
+      background: var(--bg-elevated);
+      border-radius: 8px;
+      border: 1px solid var(--border-secondary);
+      margin-bottom: 8px;
+    }
+
+    .session-goal {
+      font-size: 12px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .session-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* FOCUS OVERLAY */
+    .focus-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 11, 18, 0.98);
+      backdrop-filter: blur(20px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .focus-overlay.active {
+      display: flex;
+    }
+
+    .focus-content {
+      text-align: center;
+    }
+
+    .focus-timer {
+      font-size: 72px;
+      font-weight: 200;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--accent-primary);
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+    }
+
+    .focus-goal {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .end-btn {
+      padding: 12px 32px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-primary);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    .end-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: #ef4444;
+    }
+
+    /* TOGGLE BUTTONS */
+    .demo-controls {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 2000;
+    }
+
+    .demo-btn {
+      padding: 8px 16px;
+      background: var(--accent-primary);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .demo-btn:hover {
+      filter: brightness(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="traffic-lights">
+        <div class="traffic-light red"></div>
+        <div class="traffic-light yellow"></div>
+        <div class="traffic-light green"></div>
+      </div>
+
+      <div class="logo">
+        <div class="logo-icon"></div>
+        <span class="logo-text">Swaim</span>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="nav-btn" disabled title="Back">
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <path d="M10.5 13L5.5 8L10.5 3" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          </svg>
+        </button>
+        <button class="nav-btn" disabled title="Forward">
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <path d="M5.5 3L10.5 8L5.5 13" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          </svg>
+        </button>
+        <button class="nav-btn" title="Reload">
+          <svg width="14" height="14" viewBox="0 0 14 14">
+            <path d="M12 7C12 9.76 9.76 12 7 12C4.24 12 2 9.76 2 7C2 4.24 4.24 2 7 2C8.76 2 10.3 2.91 11.18 4.27" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M12 2V5H9" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="url-bar">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 14 14">
+          <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M9 9L12 12" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <input type="text" class="url-input" value="https://github.com" placeholder="Search or enter URL...">
+      </div>
+
+      <div class="actions">
+        <button class="action-btn" id="focusToggle" title="Focus Mode (Ctrl+Shift+F)">
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <path d="M8 3V8L11 10" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          </svg>
+        </button>
+        <button class="action-btn" id="sidebarToggle" title="Sidebar">
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <rect x="2" y="3" width="12" height="10" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M10 3V13" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="app-content">
+      <main class="browser-view">
+        <div class="browser-placeholder">
+          <h2>Swaim Browser</h2>
+          <p>Браузер для фаундеров: Deep Work + Product Discovery</p>
+        </div>
+
+        <!-- Focus Overlay -->
+        <div class="focus-overlay" id="focusOverlay">
+          <div class="focus-content">
+            <div class="focus-timer">25:00</div>
+            <p class="focus-goal">Написать документацию к проекту</p>
+            <button class="end-btn" id="endFocus">End Session</button>
+          </div>
+        </div>
+      </main>
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <header class="sidebar-header">
+          <span class="sidebar-title">Swaim</span>
+          <button class="close-btn" id="closeSidebar">
+            <svg width="14" height="14" viewBox="0 0 14 14">
+              <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </button>
+        </header>
+
+        <nav class="tabs">
+          <button class="tab-btn active">Focus</button>
+          <button class="tab-btn">Projects</button>
+          <button class="tab-btn">Insights</button>
+        </nav>
+
+        <div class="sidebar-content">
+          <h3 class="section-title">New Session</h3>
+          
+          <div class="duration-picker">
+            <button class="duration-btn selected">25 min</button>
+            <button class="duration-btn">50 min</button>
+            <button class="duration-btn">90 min</button>
+          </div>
+
+          <input type="text" class="input" placeholder="What's your goal?" value="Написать документацию к проекту">
+
+          <button class="primary-btn">Start Focus</button>
+
+          <h4 class="sub-title">Recent Sessions</h4>
+
+          <div class="session-item">
+            <div class="session-goal">Провести код-ревью PR #42</div>
+            <div class="session-meta">25min • Today, 14:30</div>
+          </div>
+
+          <div class="session-item">
+            <div class="session-goal">Исправить баги в авторизации</div>
+            <div class="session-meta">50min • Today, 11:00</div>
+          </div>
+
+          <div class="session-item">
+            <div class="session-goal">Дизайн новых компонентов</div>
+            <div class="session-meta">90min • Yesterday</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Demo Controls -->
+  <div class="demo-controls">
+    <button class="demo-btn" onclick="toggleFocus()">Toggle Focus Mode</button>
+    <button class="demo-btn" onclick="toggleSidebar()">Toggle Sidebar</button>
+  </div>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const focusOverlay = document.getElementById('focusOverlay');
+    const focusToggleBtn = document.getElementById('focusToggle');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('closed');
+    }
+
+    function toggleFocus() {
+      focusOverlay.classList.toggle('active');
+      focusToggleBtn.classList.toggle('active');
+    }
+
+    document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+    document.getElementById('closeSidebar').addEventListener('click', toggleSidebar);
+    document.getElementById('focusToggle').addEventListener('click', toggleFocus);
+    document.getElementById('endFocus').addEventListener('click', toggleFocus);
+
+    // Duration buttons
+    document.querySelectorAll('.duration-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
+
+    // Tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
