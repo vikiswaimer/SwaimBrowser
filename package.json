@@ -24,7 +24,10 @@
     "founder-tools",
     "electron"
   ],
-  "author": "Swaim Team",
+  "author": {
+    "name": "Swaim Team",
+    "email": "team@swaimapp.com"
+  },
   "license": "MIT",
   "dependencies": {
     "electron-store": "^8.2.0",
