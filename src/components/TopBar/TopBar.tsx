@@ -23,9 +23,41 @@ export function TopBar({ onBack, onForward, onReload }: TopBarProps) {
     [inputValue, navigate]
   );
 
+  const handleWindowClose = useCallback(() => {
+    window.electron?.window.close();
+  }, []);
+  const handleWindowMinimize = useCallback(() => {
+    window.electron?.window.minimize();
+  }, []);
+  const handleWindowMaximize = useCallback(() => {
+    window.electron?.window.maximize();
+  }, []);
+
   return (
     <header className={styles.topbar}>
-      <div className={styles.trafficLightSpace} />
+      <div className={styles.trafficLights}>
+        <button
+          type="button"
+          className={`${styles.trafficLight} ${styles.red}`}
+          onClick={handleWindowClose}
+          title="Закрыть"
+          aria-label="Закрыть"
+        />
+        <button
+          type="button"
+          className={`${styles.trafficLight} ${styles.yellow}`}
+          onClick={handleWindowMinimize}
+          title="Свернуть"
+          aria-label="Свернуть"
+        />
+        <button
+          type="button"
+          className={`${styles.trafficLight} ${styles.green}`}
+          onClick={handleWindowMaximize}
+          title="Развернуть"
+          aria-label="Развернуть"
+        />
+      </div>
 
       <div className={styles.logo}>
         <div className={styles.logoIcon} />

@@ -11,9 +11,43 @@
   -webkit-app-region: drag;
 }
 
-.trafficLightSpace {
-  width: var(--traffic-light-width);
+.trafficLights {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding-right: var(--spacing-md);
   flex-shrink: 0;
+  -webkit-app-region: no-drag;
+}
+
+.trafficLight {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  transition: filter 0.1s ease;
+}
+
+.trafficLight:hover {
+  filter: brightness(1.15);
+}
+
+.trafficLight:active {
+  filter: brightness(0.9);
+}
+
+.trafficLight.red {
+  background: #ff5f57;
+}
+
+.trafficLight.yellow {
+  background: #febc2e;
+}
+
+.trafficLight.green {
+  background: #28c840;
 }
 
 .logo {

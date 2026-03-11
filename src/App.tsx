@@ -64,8 +64,8 @@ function App() {
       <TopBar onBack={handleBack} onForward={handleForward} onReload={handleReload} />
       <div className="app-content">
         <BrowserView webviewRef={webviewRef} />
+        <Sidebar />
       </div>
-      <Sidebar />
     </div>
   );
 }

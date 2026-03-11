@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "start": "vite",
     "build": "tsc && vite build && electron-builder",
     "build:linux": "tsc && vite build && electron-builder --linux",
     "build:mac": "tsc && vite build && electron-builder --mac",

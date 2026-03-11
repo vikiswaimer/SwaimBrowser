@@ -9,7 +9,7 @@ interface BrowserViewProps {
 }
 
 export function BrowserView({ webviewRef }: BrowserViewProps) {
-  const { currentUrl, setUrl, setLoading, setNavigationState, setPageTitle } =
+  const { currentUrl, isLoading, setUrl, setLoading, setNavigationState, setPageTitle } =
     useBrowserStore();
   const { isActive: focusActive } = useFocusStore();
   const lastUrlRef = useRef<string>(currentUrl);
@@ -71,8 +71,18 @@ export function BrowserView({ webviewRef }: BrowserViewProps) {
     webview.src = currentUrl;
   }, [currentUrl, webviewRef]);
 
+  const showPlaceholder = isLoading;
+
   return (
     <main className={styles.browser}>
+      {showPlaceholder && (
+        <div className={styles.placeholder}>
+          <div className={styles.placeholderContent}>
+            <h2>Swaim Browser</h2>
+            <p>Браузер для фаундеров: Deep Work + Product Discovery</p>
+          </div>
+        </div>
+      )}
       <webview
         ref={webviewRef}
         className={styles.webview}

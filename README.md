@@ -16,12 +16,13 @@ cd swaim-browser
 # 2. Установить зависимости
 npm install
 
-# 3. Запустить в режиме разработки
+# 3. Запустить приложение (режим разработки)
 npm run dev
-
-# 4. Запустить Electron
-npm run electron:dev
 ```
+
+Команда `npm run dev` поднимает Vite и открывает окно Electron; приложение грузится с dev-сервера (http://localhost:5173), интерфейс отображается корректно.
+
+Для сборки и запуска из собранных файлов: `npm run electron:dev` (на части систем при загрузке из file:// возможен чёрный экран — в таком случае используйте `npm run dev`).
 
 **Требования:** Node.js >= 18, npm
 
@@ -77,7 +78,8 @@ npm run build:win     # Windows
 swaim-browser/
 ├── electron/               # Electron main process
 │   ├── main.ts            # Main процесс Electron
-│   └── preload.ts         # Preload скрипт (IPC API)
+│   ├── preload.ts         # Preload (TypeScript, для типов)
+│   └── preload.cjs        # Preload (CommonJS, используется в runtime)
 ├── src/                   # React приложение (renderer)
 │   ├── components/        # React компоненты
 │   │   ├── TopBar/        # Верхняя панель навигации

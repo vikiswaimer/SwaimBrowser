@@ -1,19 +1,21 @@
 .sidebar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
   width: var(--sidebar-width);
+  flex-shrink: 0;
   background: var(--bg-secondary);
   border-left: 1px solid var(--border-primary);
   display: flex;
   flex-direction: column;
-  transform: translateX(100%);
   transition: transform var(--transition-slow);
   z-index: 100;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  transform: translateX(100%);
 }
 
 .sidebar.open {
+  position: relative;
   transform: translateX(0);
 }
 
@@ -108,6 +110,7 @@
 .durationPicker {
   display: flex;
   gap: var(--spacing-sm);
+  margin-bottom: 12px;
 }
 
 .durationBtn {

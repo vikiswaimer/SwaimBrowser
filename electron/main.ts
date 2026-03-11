@@ -1,6 +1,9 @@
-import { app, BrowserWindow, ipcMain, shell, BrowserView } from 'electron';
-import { join } from 'path';
+import { app, BrowserWindow, ipcMain, shell, BrowserView, protocol, net } from 'electron';
+import { join, dirname } from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
 import Store from 'electron-store';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const CONFIG = Object.freeze({
   WINDOW: {
@@ -16,6 +19,19 @@ const store = new Store();
 let mainWindow: BrowserWindow | null = null;
 let browserView: BrowserView | null = null;
 
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'app', privileges: { standard: true, supportFetchAPI: true } },
+]);
+
+function registerAppProtocol(): void {
+  const distPath = join(app.getAppPath(), 'dist');
+  protocol.handle('app', (request) => {
+    const pathname = request.url.slice('app://'.length).split('?')[0] || 'index.html';
+    const filePath = join(distPath, pathname);
+    return net.fetch(pathToFileURL(filePath).toString());
+  });
+}
+
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: CONFIG.WINDOW.WIDTH,
@@ -23,14 +39,13 @@ function createWindow(): void {
     minWidth: CONFIG.WINDOW.MIN_WIDTH,
     minHeight: CONFIG.WINDOW.MIN_HEIGHT,
     title: 'Swaim Browser',
+    frame: false,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
       webviewTag: true,
     },
-    titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 16, y: 16 },
     backgroundColor: '#0a0b12',
   });
 
@@ -38,7 +53,7 @@ function createWindow(): void {
     mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(join(__dirname, '../dist/index.html'));
+    mainWindow.loadURL('app://./index.html');
   }
 
   mainWindow.on('closed', () => {
