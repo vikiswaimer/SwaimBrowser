@@ -9,6 +9,16 @@ interface HTMLWebViewElement extends HTMLElement {
   canGoForward(): boolean;
 }
 
+interface ElectronAPI {
+  storeGet: (key: string) => Promise<unknown>;
+  storeSet: (key: string, value: unknown) => Promise<void>;
+  navigate: (url: string) => void;
+}
+
+interface Window {
+  electronAPI?: ElectronAPI;
+}
+
 declare namespace JSX {
   interface IntrinsicElements {
     webview: React.DetailedHTMLProps<

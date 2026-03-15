@@ -36,6 +36,42 @@ export interface Project {
   isActive: boolean;
 }
 
+/**
+ * Типы для древовидной структуры
+ */
+export type TreeNodeType = 'folder' | 'project' | 'bookmark' | 'note';
+
+export interface TreeNode {
+  id: string;
+  parentId: string | null;
+  type: TreeNodeType;
+  name: string;
+  url?: string;
+  description?: string;
+  icon?: string;
+  color?: string;
+  isExpanded?: boolean;
+  createdAt: string;
+  updatedAt: string;
+  children?: TreeNode[];
+}
+
+export interface BookmarkImportSource {
+  type: 'chrome' | 'firefox' | 'safari' | 'edge' | 'notion' | 'json';
+  name: string;
+}
+
+export interface ImportedBookmark {
+  title: string;
+  url?: string;
+  children?: ImportedBookmark[];
+}
+
+export interface FlatTreeNode extends Omit<TreeNode, 'children'> {
+  depth: number;
+  index: number;
+}
+
 export interface UserSettings {
   theme: 'dark' | 'light' | 'system';
   defaultFocusDuration: number;
