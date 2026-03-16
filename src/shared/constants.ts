@@ -37,6 +37,15 @@ export const STORAGE_KEYS = Object.freeze({
   SESSIONS: 'sessions',
   SETTINGS: 'settings',
   PROJECTS: 'projects',
+  HYPOTHESES: 'hypotheses',
+  EXPERIMENTS: 'experiments',
+  TASKS: 'tasks',
+  OKRS: 'okrs',
+  VISION: 'vision',
+  METRICS: 'metrics',
+  COMPETITORS: 'competitors',
+  CUSTOMERS: 'customers',
+  CANVAS: 'canvas',
 });
 
 export const UI_CONFIG = Object.freeze({
@@ -75,3 +84,97 @@ export const IMPORT_SOURCES = Object.freeze([
   { type: 'notion', name: 'Notion' },
   { type: 'json', name: 'JSON File' },
 ] as const);
+
+/**
+ * Product Framework Configuration
+ * Конфигурация для Digital Business Space
+ */
+export const PRODUCT_FRAMEWORK_CONFIG = Object.freeze({
+  SIDEBAR_TABS: [
+    { id: 'focus', label: 'Focus', icon: '⚡' },
+    { id: 'tasks', label: 'Tasks', icon: '✓' },
+    { id: 'insights', label: 'Insights', icon: '💡' },
+    { id: 'hypotheses', label: 'Hypotheses', icon: '🎯' },
+    { id: 'strategy', label: 'Strategy', icon: '📊' },
+    { id: 'resources', label: 'Resources', icon: '📁' },
+  ] as const,
+  
+  HYPOTHESIS_TYPES: [
+    { value: 'problem', label: 'Problem' },
+    { value: 'solution', label: 'Solution' },
+    { value: 'channel', label: 'Channel' },
+    { value: 'revenue', label: 'Revenue' },
+    { value: 'other', label: 'Other' },
+  ] as const,
+  
+  HYPOTHESIS_STATUSES: [
+    { value: 'draft', label: 'Draft', color: '--text-muted' },
+    { value: 'testing', label: 'Testing', color: '--accent-yellow' },
+    { value: 'validated', label: 'Validated', color: '--accent-green' },
+    { value: 'invalidated', label: 'Invalidated', color: '--accent-red' },
+  ] as const,
+  
+  TASK_STATUSES: [
+    { value: 'backlog', label: 'Backlog' },
+    { value: 'todo', label: 'To Do' },
+    { value: 'in_progress', label: 'In Progress' },
+    { value: 'done', label: 'Done' },
+  ] as const,
+  
+  TASK_PRIORITIES: [
+    { value: 'high', label: 'High', color: '--accent-red' },
+    { value: 'medium', label: 'Medium', color: '--accent-yellow' },
+    { value: 'low', label: 'Low', color: '--text-muted' },
+  ] as const,
+  
+  INSIGHT_TYPES: [
+    { value: 'pain', label: 'Pain', icon: '😣' },
+    { value: 'gain', label: 'Gain', icon: '🎉' },
+    { value: 'quote', label: 'Quote', icon: '💬' },
+    { value: 'observation', label: 'Observation', icon: '👁' },
+    { value: 'idea', label: 'Idea', icon: '💡' },
+    { value: 'other', label: 'Other', icon: '📝' },
+  ] as const,
+  
+  EXPERIMENT_METHODS: [
+    { value: 'interview', label: 'Customer Interview' },
+    { value: 'survey', label: 'Survey' },
+    { value: 'ab_test', label: 'A/B Test' },
+    { value: 'landing', label: 'Landing Page' },
+    { value: 'mvp', label: 'MVP Test' },
+    { value: 'other', label: 'Other' },
+  ] as const,
+  
+  CANVAS_BLOCKS: [
+    { type: 'problem', label: 'Problem', position: 1 },
+    { type: 'solution', label: 'Solution', position: 2 },
+    { type: 'unique_value', label: 'Unique Value Proposition', position: 3 },
+    { type: 'unfair_advantage', label: 'Unfair Advantage', position: 4 },
+    { type: 'customer_segments', label: 'Customer Segments', position: 5 },
+    { type: 'channels', label: 'Channels', position: 6 },
+    { type: 'revenue_streams', label: 'Revenue Streams', position: 7 },
+    { type: 'cost_structure', label: 'Cost Structure', position: 8 },
+    { type: 'key_metrics', label: 'Key Metrics', position: 9 },
+  ] as const,
+  
+  METRIC_CATEGORIES: [
+    { value: 'acquisition', label: 'Acquisition' },
+    { value: 'activation', label: 'Activation' },
+    { value: 'retention', label: 'Retention' },
+    { value: 'revenue', label: 'Revenue' },
+    { value: 'referral', label: 'Referral' },
+  ] as const,
+});
+
+export const HOTKEYS_EXTENDED = Object.freeze({
+  ...HOTKEYS,
+  ADD_TASK: { key: 't', altKey: true },
+  LINK_HYPOTHESIS: { key: 'h', altKey: true },
+  COMMAND_PALETTE: { key: 'k', metaKey: true },
+  SWITCH_TAB_1: { key: '1', altKey: true },
+  SWITCH_TAB_2: { key: '2', altKey: true },
+  SWITCH_TAB_3: { key: '3', altKey: true },
+  SWITCH_TAB_4: { key: '4', altKey: true },
+  SWITCH_TAB_5: { key: '5', altKey: true },
+  SWITCH_TAB_6: { key: '6', altKey: true },
+});
