@@ -9,14 +9,19 @@ interface HTMLWebViewElement extends HTMLElement {
   canGoForward(): boolean;
 }
 
-interface ElectronAPI {
-  storeGet: (key: string) => Promise<unknown>;
-  storeSet: (key: string, value: unknown) => Promise<void>;
-  navigate: (url: string) => void;
+interface ElectronStore {
+  get: (key: string, defaultValue?: unknown) => Promise<unknown>;
+  set: (key: string, value: unknown) => Promise<void>;
+  delete: (key: string) => Promise<void>;
+  clear: () => Promise<void>;
 }
 
 interface Window {
-  electronAPI?: ElectronAPI;
+  electron?: {
+    store: ElectronStore;
+    app?: { getVersion: () => Promise<string>; getPlatform: () => Promise<string> };
+    window?: { minimize: () => void; maximize: () => void; close: () => void };
+  };
 }
 
 declare namespace JSX {

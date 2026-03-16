@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSidebarStore, useFocusStore, useInsightsStore, useProjectsStore } from '@store';
+import { useSidebarStore, useFocusStore, useInsightsStore, useProjectsStore, useBrowserStore } from '@store';
 import { FOCUS_CONFIG, formatDate, STORAGE_KEYS } from '@shared';
 import type { SidebarTab, FocusDuration, TreeNode } from '@shared';
 import { TreeView, ImportBookmarks } from '../TreeView';
@@ -18,12 +18,13 @@ export function Sidebar() {
   } = useFocusStore();
   const { recentInsights } = useInsightsStore();
   const { nodes, loadNodes } = useProjectsStore();
+  const { navigate } = useBrowserStore();
   const [showImport, setShowImport] = useState(false);
 
   const loadProjectsFromStorage = useCallback(async () => {
     try {
-      if (window.electronAPI) {
-        const savedNodes = await window.electronAPI.storeGet(STORAGE_KEYS.PROJECTS);
+      if (window.electron?.store) {
+        const savedNodes = await window.electron.store.get(STORAGE_KEYS.PROJECTS, []);
         if (savedNodes && Array.isArray(savedNodes)) {
           loadNodes(savedNodes as TreeNode[]);
         }
@@ -40,8 +41,8 @@ export function Sidebar() {
 
   const saveProjectsToStorage = useCallback(async () => {
     try {
-      if (window.electronAPI) {
-        await window.electronAPI.storeSet(STORAGE_KEYS.PROJECTS, nodes);
+      if (window.electron?.store) {
+        await window.electron.store.set(STORAGE_KEYS.PROJECTS, nodes);
       } else {
         localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(nodes));
       }
@@ -61,12 +62,8 @@ export function Sidebar() {
   }, [nodes, saveProjectsToStorage]);
 
   const handleOpenUrl = useCallback((url: string) => {
-    if (window.electronAPI) {
-      window.electronAPI.navigate(url);
-    } else {
-      window.open(url, '_blank');
-    }
-  }, []);
+    navigate(url);
+  }, [navigate]);
 
   const tabs: { id: SidebarTab; label: string }[] = [
     { id: 'focus', label: 'Focus' },

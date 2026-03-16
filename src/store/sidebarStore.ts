@@ -13,7 +13,7 @@ interface SidebarState {
 
 export const useSidebarStore = create<SidebarState>((set) => ({
   isOpen: true,
-  activeTab: 'focus',
+  activeTab: 'projects',
 
   toggle: () => set((state) => ({ isOpen: !state.isOpen })),
   open: () => set({ isOpen: true }),
