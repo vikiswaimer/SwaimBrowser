@@ -1,6 +1,8 @@
-import { useSidebarStore, useFocusStore, useInsightsStore } from '@store';
-import { FOCUS_CONFIG, formatDate } from '@shared';
-import type { SidebarTab, FocusDuration } from '@shared';
+import { useState, useEffect, useCallback } from 'react';
+import { useSidebarStore, useFocusStore, useInsightsStore, useProjectsStore } from '@store';
+import { FOCUS_CONFIG, formatDate, STORAGE_KEYS } from '@shared';
+import type { SidebarTab, FocusDuration, TreeNode } from '@shared';
+import { TreeView, ImportBookmarks } from '../TreeView';
 import styles from './Sidebar.module.css';
 
 export function Sidebar() {
@@ -15,6 +17,56 @@ export function Sidebar() {
     start,
   } = useFocusStore();
   const { recentInsights } = useInsightsStore();
+  const { nodes, loadNodes } = useProjectsStore();
+  const [showImport, setShowImport] = useState(false);
+
+  const loadProjectsFromStorage = useCallback(async () => {
+    try {
+      if (window.electronAPI) {
+        const savedNodes = await window.electronAPI.storeGet(STORAGE_KEYS.PROJECTS);
+        if (savedNodes && Array.isArray(savedNodes)) {
+          loadNodes(savedNodes as TreeNode[]);
+        }
+      } else {
+        const savedNodes = localStorage.getItem(STORAGE_KEYS.PROJECTS);
+        if (savedNodes) {
+          loadNodes(JSON.parse(savedNodes));
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load projects from storage:', error);
+    }
+  }, [loadNodes]);
+
+  const saveProjectsToStorage = useCallback(async () => {
+    try {
+      if (window.electronAPI) {
+        await window.electronAPI.storeSet(STORAGE_KEYS.PROJECTS, nodes);
+      } else {
+        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(nodes));
+      }
+    } catch (error) {
+      console.warn('Failed to save projects to storage:', error);
+    }
+  }, [nodes]);
+
+  useEffect(() => {
+    loadProjectsFromStorage();
+  }, [loadProjectsFromStorage]);
+
+  useEffect(() => {
+    if (nodes.length > 0) {
+      saveProjectsToStorage();
+    }
+  }, [nodes, saveProjectsToStorage]);
+
+  const handleOpenUrl = useCallback((url: string) => {
+    if (window.electronAPI) {
+      window.electronAPI.navigate(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  }, []);
 
   const tabs: { id: SidebarTab; label: string }[] = [
     { id: 'focus', label: 'Focus' },
@@ -102,8 +154,24 @@ export function Sidebar() {
 
         {activeTab === 'projects' && (
           <div className={styles.pane}>
-            <h3 className={styles.sectionTitle}>Projects</h3>
-            <p className={styles.placeholder}>Projects feature coming soon...</p>
+            <div className={styles.projectsHeader}>
+              <h3 className={styles.sectionTitle}>Projects</h3>
+              <button
+                className={styles.importBtn}
+                onClick={() => setShowImport(true)}
+                title="Import bookmarks"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M7 1V10M7 10L4 7M7 10L10 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2 12H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                Import
+              </button>
+            </div>
+            <TreeView onOpenUrl={handleOpenUrl} />
+            {showImport && (
+              <ImportBookmarks onClose={() => setShowImport(false)} />
+            )}
           </div>
         )}
 

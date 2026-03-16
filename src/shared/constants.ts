@@ -57,3 +57,21 @@ export const CSS_CLASSES = Object.freeze({
   OPEN: 'open',
   DISABLED: 'disabled',
 });
+
+export const TREE_CONFIG = Object.freeze({
+  INDENT_SIZE: 20,
+  DRAG_OVERLAY_OPACITY: 0.8,
+  DROP_ANIMATION_DURATION: 200,
+  MAX_DEPTH: 10,
+  DEFAULT_EXPANDED: true,
+  AUTO_EXPAND_ON_DRAG: true,
+});
+
+export const IMPORT_SOURCES = Object.freeze([
+  { type: 'chrome', name: 'Google Chrome' },
+  { type: 'firefox', name: 'Mozilla Firefox' },
+  { type: 'safari', name: 'Safari' },
+  { type: 'edge', name: 'Microsoft Edge' },
+  { type: 'notion', name: 'Notion' },
+  { type: 'json', name: 'JSON File' },
+] as const);
