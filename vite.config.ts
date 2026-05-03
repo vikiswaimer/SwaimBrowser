@@ -48,6 +48,7 @@ export default defineConfig({
       '@store': resolve(__dirname, 'src/store/index.ts'),
       '@hooks': resolve(__dirname, 'src/hooks/index.ts'),
       '@lib': resolve(__dirname, 'src/lib/index.ts'),
+      '@services': resolve(__dirname, 'src/services/index.ts'),
     },
   },
   build: {
