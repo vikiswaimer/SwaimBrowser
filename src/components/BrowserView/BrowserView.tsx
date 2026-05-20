@@ -78,8 +78,12 @@ export function BrowserView({ webviewRef }: BrowserViewProps) {
       {showPlaceholder && (
         <div className={styles.placeholder}>
           <div className={styles.placeholderContent}>
-            <h2>Swaim Browser</h2>
-            <p>Браузер для фаундеров: Deep Work + Product Discovery</p>
+            <div className={styles.logo}>
+              <span className={styles.logoIcon}>◈</span>
+              <span className={styles.logoText}>Swaim</span>
+            </div>
+            <p className={styles.tagline}>Deep Work Browser for Founders</p>
+            <p className={styles.subtitle}>Build • Measure • Learn</p>
           </div>
         </div>
       )}

@@ -1,9 +1,9 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10, 11, 18, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(11, 11, 11, 0.95);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,38 +15,178 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--spacing-xl);
+  max-width: 400px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+}
+
+.sublabel {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* Timer Container */
+.timerContainer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.progressRing {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.progressBg {
+  stroke: var(--border-primary);
+}
+
+.progressCircle {
+  stroke: var(--accent-primary);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+.timerDisplay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .timer {
-  font-size: 72px;
+  font-size: var(--text-5xl);
   font-weight: 200;
   font-family: var(--font-mono);
-  color: var(--accent-primary);
-  letter-spacing: 4px;
-  margin-bottom: 16px;
+  color: var(--text-primary);
+  letter-spacing: 2px;
+}
+
+.timerUnit {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Goal Section */
+.goalSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-2xl);
+  padding: var(--spacing-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  width: 100%;
+}
+
+.goalLabel {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
 .goal {
-  font-size: 16px;
-  color: var(--text-secondary);
-  max-width: 400px;
-  margin-bottom: 32px;
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  line-height: 1.5;
 }
 
+/* Stats */
+.stats {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.statValue {
+  font-size: var(--text-2xl);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.statLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statDivider {
+  width: 1px;
+  height: 32px;
+  background: var(--border-primary);
+}
+
+/* End Button */
 .endBtn {
-  padding: 12px 32px;
-  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: transparent;
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   font-size: var(--text-sm);
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .endBtn:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  border-color: var(--error);
+  background: var(--invalid-muted);
+  border-color: var(--invalid);
+  color: var(--invalid);
+}
+
+/* Hint */
+.hint {
+  margin-top: var(--spacing-2xl);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.hint kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  margin: 0 2px;
 }
