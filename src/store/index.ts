@@ -3,3 +3,5 @@ export { useBrowserStore } from './browserStore';
 export { useSidebarStore } from './sidebarStore';
 export { useInsightsStore } from './insightsStore';
 export { useProjectsStore } from './projectsStore';
+export { useHypothesesStore } from './hypothesesStore';
+export { useMetricsStore } from './metricsStore';

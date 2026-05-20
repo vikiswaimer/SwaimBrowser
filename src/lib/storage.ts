@@ -12,7 +12,8 @@ class ElectronStorageAdapter implements StorageAdapter {
     if (!window.electron) {
       throw new Error('Electron API not available');
     }
-    return window.electron.store.get(key, defaultValue);
+    const result = await window.electron.store.get(key, defaultValue);
+    return result as T;
   }
 
   async set<T>(key: string, value: T): Promise<void> {

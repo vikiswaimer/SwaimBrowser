@@ -1,12 +1,14 @@
 .browser {
   flex: 1;
   position: relative;
-  background: var(--bg-tertiary);
+  background: var(--bg-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-width: 0;
+  border-left: 1px solid var(--border-secondary);
+  border-right: 1px solid var(--border-secondary);
 }
 
 .webview {
@@ -27,15 +29,43 @@
   color: var(--text-muted);
   pointer-events: none;
   z-index: 0;
+  background: var(--bg-primary);
 }
 
-.placeholderContent h2 {
-  font-size: var(--text-3xl);
+.placeholderContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.logoIcon {
+  font-size: var(--text-4xl);
+  color: var(--accent-primary);
+}
+
+.logoText {
+  font-size: var(--text-4xl);
   font-weight: 300;
-  margin-bottom: var(--spacing-sm);
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
-.placeholderContent p {
+.tagline {
   font-size: var(--text-lg);
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  color: var(--accent-primary);
+  letter-spacing: 0.1em;
 }

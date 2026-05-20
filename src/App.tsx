@@ -1,7 +1,8 @@
 import { useRef, useCallback, useEffect } from 'react';
-import { TopBar, BrowserView, Sidebar } from '@components';
+import { TopBar, BrowserView, LeftPanel, RightPanel } from '@components';
 import { useBrowserStore, useFocusStore, useInsightsStore } from '@store';
 import { STORAGE_KEYS, HOTKEYS } from '@shared';
+import type { Insight } from '@shared';
 import './styles/theme.css';
 
 function App() {
@@ -25,7 +26,7 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       if (window.electron) {
-        const insights = await window.electron.store.get(STORAGE_KEYS.INSIGHTS, []);
+        const insights = await window.electron.store.get(STORAGE_KEYS.INSIGHTS, []) as Insight[];
         loadInsights(insights);
       }
     };
@@ -63,8 +64,9 @@ function App() {
     <div className="app">
       <TopBar onBack={handleBack} onForward={handleForward} onReload={handleReload} />
       <div className="app-content">
+        <LeftPanel />
         <BrowserView webviewRef={webviewRef} />
-        <Sidebar />
+        <RightPanel />
       </div>
     </div>
   );

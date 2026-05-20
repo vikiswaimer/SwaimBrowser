@@ -94,3 +94,63 @@ export interface BrowserTab {
 export type SidebarTab = 'focus' | 'projects' | 'insights';
 
 export type FocusDuration = 25 | 50 | 90;
+
+/**
+ * Lean Startup: Гипотезы и спринты
+ */
+export type HypothesisStatus = 'pending' | 'testing' | 'validated' | 'invalid';
+
+export interface Hypothesis {
+  id: string;
+  text: string;
+  status: HypothesisStatus;
+  createdAt: string;
+  validatedAt?: string;
+  notes?: string;
+}
+
+export interface Sprint {
+  id: string;
+  number: number;
+  name: string;
+  goal: string;
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+  hypotheses: string[];
+}
+
+export interface SprintTask {
+  id: string;
+  sprintId: string;
+  text: string;
+  completed: boolean;
+  priority: 'low' | 'medium' | 'high';
+}
+
+/**
+ * Метрики в реальном времени
+ */
+export type MetricTrend = 'up' | 'down' | 'stable';
+
+export interface Metric {
+  id: string;
+  name: string;
+  value: number | string;
+  unit?: string;
+  trend?: MetricTrend;
+  change?: number;
+  updatedAt: string;
+}
+
+export interface MetricGroup {
+  id: string;
+  name: string;
+  metrics: Metric[];
+}
+
+export interface ApiStatus {
+  name: string;
+  status: 'connected' | 'disconnected' | 'error';
+  latency?: number;
+}
