@@ -356,15 +356,17 @@ swaim-browser/
 │   └── preload.ts         # Preload скрипт, ElectronAPI
 ├── src/                   # React приложение (Renderer)
 │   ├── components/        # UI компоненты
-│   │   ├── TopBar/
-│   │   ├── Sidebar/
-│   │   ├── BrowserView/
-│   │   └── FocusOverlay/
+│   │   ├── TopBar/        # Навигация, мини-таймер
+│   │   ├── LeftPanel/     # Гипотезы, спринт, задачи
+│   │   ├── RightPanel/    # Метрики, API статус
+│   │   ├── BrowserView/   # Webview контейнер
+│   │   └── FocusOverlay/  # Deep Work оверлей
 │   ├── store/             # Zustand stores
 │   │   ├── browserStore.ts
 │   │   ├── focusStore.ts
+│   │   ├── hypothesesStore.ts  # NEW: гипотезы, спринты, задачи
 │   │   ├── insightsStore.ts
-│   │   └── sidebarStore.ts
+│   │   └── metricsStore.ts     # NEW: метрики и API статус
 │   ├── shared/            # Кроссплатформенный код
 │   │   ├── constants.ts
 │   │   ├── types.ts
@@ -376,7 +378,7 @@ swaim-browser/
 │   ├── lib/               # Сервисы
 │   │   └── storage.ts
 │   └── styles/            # Глобальные стили
-│       └── theme.css
+│       └── theme.css      # Техно-минимализм + Glassmorphism
 ├── docs/                  # Документация
 └── index.html             # Entry point
 ```
