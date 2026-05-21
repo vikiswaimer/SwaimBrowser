@@ -437,36 +437,43 @@ const blockedDomains = [
 
 ## 12. Roadmap
 
-### v0.1 — MVP (текущая)
-- Deep Work Sessions (Focus Mode)
+### v0.1 — Foundation (завершено)
+- Basic Browser Core
+- Focus Mode with timer
 - Basic Insights
-- Product Framework Sidebar
-- Browser Core
+- Single Sidebar
 
-### v0.2 — Retention
-- Gamification (streaks, stats)
-- Customizable blocked sites
-- Export (JSON, Markdown)
-- Session history with analytics
-- Inline форма для инсайтов
-- Tabs (вкладки браузера)
+### v0.2 — Product Research Platform (текущая)
+- Hypothesis Management (tree, statuses)
+- Sprint Tracking (progress, tasks)
+- Real-time Metrics Dashboard
+- Three-column Layout (LeftPanel, BrowserView, RightPanel)
+- Техно-минимализм дизайн с Glassmorphism
+- Deep Work Overlay с круговым таймером
 
-### v0.3 — Intelligence
+### v0.3 — Intelligence & Analytics
 - AI-powered insight extraction
-- Auto-tagging
-- Sync & Cloud storage
-- Knowledge connections
+- Hypothesis analytics и рекомендации
+- Auto-tagging инсайтов
+- Knowledge graph между гипотезами
 
-### v0.4 — Collaboration
+### v0.4 — Integrations
+- Linear/Jira синхронизация
+- Notion export
+- Webhook API
+- Calendar integration
+
+### v0.5 — Collaboration
 - Team workspaces
-- Shared projects
-- Comments on insights
-- Integrations (Linear, Notion)
+- Shared hypotheses
+- Comments и mentions
+- Role-based access
 
-### v0.5 — Expansion
+### v1.0 — Expansion
 - Mobile companion app
-- Slack integration
-- API for developers
+- Cloud sync
+- Public API
+- Enterprise features
 
 ---
 

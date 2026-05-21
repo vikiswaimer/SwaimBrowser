@@ -188,20 +188,56 @@ User Action → React Component → Zustand Action → State Update
 
 ## CSS Architecture
 
-### CSS Variables (Theme)
+### CSS Variables (Техно-минимализм Theme)
 ```css
 :root {
-  --bg-primary: #0a0b12;
-  --bg-secondary: #11151f;
-  --accent-primary: #4f8cff;
-  --text-primary: #f5f7fa;
-  --text-secondary: #a1a8b8;
-  --border-primary: rgba(255,255,255,0.08);
+  /* Background - Глубокий антрацит */
+  --bg-primary: #0B0B0B;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1A1A1A;
+  --bg-elevated: rgba(255, 255, 255, 0.03);
+  --bg-hover: rgba(255, 255, 255, 0.06);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(17, 17, 17, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(20px);
+
+  /* Accent - Электрический синий */
+  --accent-primary: #0066FF;
+  --accent-secondary: #3385FF;
+  --accent-muted: rgba(0, 102, 255, 0.15);
+  --accent-glow: rgba(0, 102, 255, 0.4);
+
+  /* Validation colors */
+  --validated: #22C55E;
+  --validated-muted: rgba(34, 197, 94, 0.15);
+  --invalid: #EF4444;
+  --invalid-muted: rgba(239, 68, 68, 0.15);
+
+  /* Text */
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --text-muted: #606060;
+
+  /* Borders - тонкие 1px */
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.05);
+
+  /* Layout */
+  --topbar-height: 48px;
+  --left-panel-width: 280px;
+  --right-panel-width: 280px;
 }
 ```
 
 ### CSS Modules
-Каждый компонент имеет свой `.module.css` файл для изоляции стилей.
+Каждый компонент имеет свой `.module.css` файл для изоляции стилей:
+- `TopBar.module.css`
+- `LeftPanel.module.css`
+- `RightPanel.module.css`
+- `BrowserView.module.css`
+- `FocusOverlay.module.css`
 
 ## Горячие клавиши
 

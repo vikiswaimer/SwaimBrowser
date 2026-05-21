@@ -507,22 +507,28 @@ Swaim Browser — специализированный браузер для п�
 
 ## 📝 Ключевые выводы
 
-1. **Уникальность Swaim** — комбинация Focus Mode + Инсайты + Проекты. Ни один конкурент не предлагает полный набор.
+1. **Уникальность Swaim** — единственный браузер с полным Lean Startup workflow:
+   - Hypothesis Management (дерево гипотез со статусами)
+   - Sprint Tracking (прогресс и задачи)
+   - Real-time Metrics (метрики продукта)
+   - Deep Work (фокусировка)
+   - Insights (сбор данных)
 
 2. **Главные угрозы:**
-   - Arc Browser (если добавят focus mode)
-   - Notion + расширения (если улучшат UX)
-   - AI-native browsers нового поколения
+   - Linear + Browser Extension (если создадут)
+   - Notion + Arc integration
+   - AI-native product management tools
 
 3. **Возможности для дифференциации:**
-   - AI-powered исследования
-   - Лучший UX для capture
-   - Специализация на продакт-менеджерах
+   - **Браузер как primary workspace** — не переключаться между приложениями
+   - **Build → Measure → Learn в одном интерфейсе**
+   - **Real-time metrics** встроенные в workflow
+   - **AI-powered hypothesis validation**
 
 4. **Монетизация:**
-   - Free tier: базовый focus mode + ограниченные инсайты
-   - Pro ($12-15/мес): безлимит + AI + integrations
-   - Team ($20-25/мес/user): collaboration + admin
+   - Free tier: базовые гипотезы + limited sprints
+   - Pro ($15/мес): unlimited + AI insights + integrations
+   - Team ($25/мес/user): shared hypotheses + analytics + SSO
 
 ---
 

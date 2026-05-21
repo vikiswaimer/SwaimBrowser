@@ -209,25 +209,29 @@ Swaim Browser — продуктивный браузер для исследо�
 
 ## Матрица трассировки
 
-| Требование | Модуль | Статус | Файл/Строки |
-|------------|--------|--------|-------------|
-| FR-NAV-001 | Navigation | ✅ | index.html:346-355 |
-| FR-NAV-002 | Navigation | ✅ | index.html:357 |
-| FR-NAV-003 | Navigation | ✅ | index.html:358 |
-| FR-NAV-004 | Navigation | ✅ | index.html:359 |
-| FR-NAV-005 | Navigation | ✅ | index.html:480-482 |
-| FR-FOC-001 | Focus | ✅ | index.html:374-399 |
-| FR-FOC-002 | Focus | ✅ | index.html:423-428 |
-| FR-FOC-003 | Focus | ✅ | index.html:412-421 |
-| FR-FOC-004 | Focus | ✅ | index.html:402-410 |
-| FR-FOC-005 | Focus | ✅ | index.html:293-297 |
-| FR-FOC-006 | Focus | ✅ | index.html:298 |
-| FR-SB-001 | Sidebar | ✅ | index.html:362-368 |
-| FR-SB-002 | Sidebar | ✅ | index.html:431-438 |
-| FR-INS-001 | Insights | ✅ | index.html:456-468 |
-| FR-INS-002 | Insights | ✅ | index.html:470-476 |
-| FR-INS-003 | Insights | ✅ | index.html:460-465 |
-| FR-PRJ-001 | Projects | 🚧 | — |
-| FR-PRJ-002 | Projects | 🚧 | — |
-| FR-HK-001 | Hotkeys | ✅ | index.html:443-447 |
-| FR-HK-002 | Hotkeys | ✅ | index.html:449-452 |
+| Требование | Модуль | Статус | Компонент |
+|------------|--------|--------|-----------|
+| FR-NAV-001 | Navigation | ✅ | TopBar |
+| FR-NAV-002 | Navigation | ✅ | TopBar |
+| FR-NAV-003 | Navigation | ✅ | TopBar |
+| FR-NAV-004 | Navigation | ✅ | TopBar |
+| FR-NAV-005 | Navigation | ✅ | TopBar |
+| FR-HYP-001 | Hypotheses | ✅ | LeftPanel |
+| FR-HYP-002 | Hypotheses | ✅ | LeftPanel |
+| FR-HYP-003 | Hypotheses | ✅ | LeftPanel |
+| FR-SPR-001 | Sprints | ✅ | LeftPanel |
+| FR-SPR-002 | Sprints | ✅ | LeftPanel |
+| FR-MET-001 | Metrics | ✅ | RightPanel |
+| FR-MET-002 | Metrics | ✅ | RightPanel |
+| FR-MET-003 | Metrics | ✅ | RightPanel |
+| FR-DW-001 | Deep Work | ✅ | FocusOverlay |
+| FR-DW-002 | Deep Work | ✅ | FocusOverlay |
+| FR-DW-003 | Deep Work | ✅ | FocusOverlay |
+| FR-DW-004 | Deep Work | ✅ | FocusOverlay |
+| FR-INS-001 | Insights | ✅ | insightsStore |
+| FR-INS-002 | Insights | ✅ | insightsStore |
+| FR-INS-003 | Insights | ✅ | electron-store |
+| FR-HK-001 | Hotkeys | ✅ | App.tsx |
+| FR-HK-002 | Hotkeys | ✅ | App.tsx |
+| FR-HK-003 | Hotkeys | ✅ | App.tsx |
+| FR-HK-004 | Hotkeys | ✅ | App.tsx |

@@ -371,32 +371,32 @@
 
 ---
 
-## 📊 Приоритизация: Top-20 для v0.2-v0.3
+## 📊 Приоритизация: Top-20 для v0.3-v0.4
 
-На основе ICE Score (Impact × Confidence × Ease):
+На основе ICE Score (Impact × Confidence × Ease) с фокусом на Product Research:
 
 | # | Гипотеза | ICE | Версия |
 |---|----------|-----|--------|
-| 1 | Command Palette (⌘K) | 27 | v0.2 |
-| 36 | Selection Capture | 27 | v0.2 |
-| 46 | Full-Text Search | 26 | v0.2 |
-| 26 | Friction Mode | 25 | v0.2 |
-| 31 | Session Goals (улучшение) | 25 | v0.2 |
-| 81 | Daily Streaks | 24 | v0.2 |
-| 21 | Custom Durations | 24 | v0.2 |
-| 39 | Quick Tags | 23 | v0.2 |
-| 51 | Auto-Summary | 22 | v0.3 |
-| 34 | End-of-Session Review | 22 | v0.2 |
-| 14 | Dark/Light Themes | 21 | v0.2 |
-| 41 | Folders/Collections | 21 | v0.2 |
-| 71 | Notion Export | 20 | v0.3 |
-| 66 | Linear Sync | 20 | v0.3 |
-| 82 | Badges System | 19 | v0.2 |
-| 6 | Zen Mode | 19 | v0.2 |
-| 53 | Auto-Tagging | 18 | v0.3 |
-| 45 | Table/Database View | 18 | v0.3 |
-| 77 | Slack Status | 17 | v0.3 |
-| 56 | Ask Questions (RAG) | 17 | v0.4 |
+| 1 | **Hypothesis Templates** (шаблоны гипотез для разных типов) | 28 | v0.3 |
+| 2 | **Hypothesis Analytics** (воронка pending → validated) | 27 | v0.3 |
+| 3 | **Sprint Retrospective** (ретроспектива спринта) | 26 | v0.3 |
+| 4 | **Insight → Hypothesis Link** (автосвязь инсайтов с гипотезами) | 26 | v0.3 |
+| 5 | **Metrics Customization** (настройка метрик в RightPanel) | 25 | v0.3 |
+| 6 | **Command Palette (⌘K)** (глобальный поиск) | 25 | v0.3 |
+| 7 | **AI Hypothesis Suggestions** (AI предлагает гипотезы на основе инсайтов) | 24 | v0.4 |
+| 8 | **Linear Sync** (синхронизация гипотез с Linear issues) | 24 | v0.3 |
+| 9 | **Experiment Tracking** (A/B тесты и эксперименты) | 23 | v0.4 |
+| 10 | **Full-Text Search** (поиск по гипотезам и инсайтам) | 23 | v0.3 |
+| 11 | **Selection Capture** (выделение текста → инсайт) | 22 | v0.3 |
+| 12 | **Notion Export** (экспорт гипотез и спринтов в Notion) | 22 | v0.3 |
+| 13 | **AI Auto-Summary** (автосаммари страницы) | 21 | v0.4 |
+| 14 | **Hypothesis History** (история изменений статусов) | 21 | v0.3 |
+| 15 | **Team Hypotheses** (шаринг гипотез в команде) | 20 | v0.4 |
+| 16 | **Custom Metrics API** (подключение своих метрик) | 20 | v0.4 |
+| 17 | **Sprint Planning** (планирование спринтов) | 19 | v0.3 |
+| 18 | **Validation Criteria** (критерии валидации для каждой гипотезы) | 19 | v0.3 |
+| 19 | **Daily Streaks** (геймификация исследований) | 18 | v0.3 |
+| 20 | **Knowledge Graph** (граф связей между гипотезами) | 17 | v0.4 |
 
 ---
 
