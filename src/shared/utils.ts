@@ -75,10 +75,20 @@ export function formatDate(isoString: string): string {
   });
 }
 
+const HTML_ESCAPE_MAP: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+
 export function escapeHtml(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+  if (!text || typeof text !== 'string') {
+    return '';
+  }
+  
+  return text.replace(/[&<>"']/g, (char) => HTML_ESCAPE_MAP[char] || char);
 }
 
 export function debounce<T extends (...args: unknown[]) => unknown>(

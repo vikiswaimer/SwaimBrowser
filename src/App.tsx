@@ -1,15 +1,27 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { TopBar, BrowserView, LeftPanel, RightPanel } from '@components';
-import { useBrowserStore, useFocusStore, useInsightsStore } from '@store';
+import { useBrowserStore, useFocusStore, useInsightsStore, useHypothesesStore, useMetricsStore } from '@store';
 import { STORAGE_KEYS, HOTKEYS } from '@shared';
-import type { Insight } from '@shared';
+import type { Insight, FocusSession, Hypothesis, Sprint, SprintTask } from '@shared';
 import './styles/theme.css';
+
+const HYPOTHESES_KEY = 'hypotheses';
+const SPRINTS_KEY = 'sprints';
+const TASKS_KEY = 'tasks';
 
 function App() {
   const webviewRef = useRef<HTMLWebViewElement>(null);
   const { currentUrl } = useBrowserStore();
-  const { toggle: toggleFocus } = useFocusStore();
-  const { addInsight, loadInsights } = useInsightsStore();
+  const { toggle: toggleFocus, sessions, loadSessions } = useFocusStore();
+  const { addInsight, loadInsights, insights } = useInsightsStore();
+  const { 
+    hypotheses, 
+    sprints, 
+    tasks, 
+    loadHypotheses, 
+    loadSprints, 
+    loadTasks 
+  } = useHypothesesStore();
 
   const handleBack = useCallback(() => {
     webviewRef.current?.goBack();
@@ -25,13 +37,54 @@ function App() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (window.electron) {
-        const insights = await window.electron.store.get(STORAGE_KEYS.INSIGHTS, []) as Insight[];
-        loadInsights(insights);
+      try {
+        if (window.electron) {
+          const [
+            savedInsights,
+            savedSessions,
+            savedHypotheses,
+            savedSprints,
+            savedTasks
+          ] = await Promise.all([
+            window.electron.store.get(STORAGE_KEYS.INSIGHTS, []) as Promise<Insight[]>,
+            window.electron.store.get(STORAGE_KEYS.SESSIONS, []) as Promise<FocusSession[]>,
+            window.electron.store.get(HYPOTHESES_KEY, null) as Promise<Hypothesis[] | null>,
+            window.electron.store.get(SPRINTS_KEY, null) as Promise<Sprint[] | null>,
+            window.electron.store.get(TASKS_KEY, null) as Promise<SprintTask[] | null>,
+          ]);
+          
+          loadInsights(savedInsights);
+          loadSessions(savedSessions);
+          
+          if (savedHypotheses) loadHypotheses(savedHypotheses);
+          if (savedSprints) loadSprints(savedSprints);
+          if (savedTasks) loadTasks(savedTasks);
+        }
+      } catch (error) {
+        console.warn('Failed to load data from storage:', error);
       }
     };
     loadData();
-  }, [loadInsights]);
+  }, [loadInsights, loadSessions, loadHypotheses, loadSprints, loadTasks]);
+
+  useEffect(() => {
+    const saveData = async () => {
+      try {
+        if (window.electron) {
+          await Promise.all([
+            window.electron.store.set(STORAGE_KEYS.INSIGHTS, insights),
+            window.electron.store.set(STORAGE_KEYS.SESSIONS, sessions),
+            window.electron.store.set(HYPOTHESES_KEY, hypotheses),
+            window.electron.store.set(SPRINTS_KEY, sprints),
+            window.electron.store.set(TASKS_KEY, tasks),
+          ]);
+        }
+      } catch (error) {
+        console.warn('Failed to save data to storage:', error);
+      }
+    };
+    saveData();
+  }, [insights, sessions, hypotheses, sprints, tasks]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
