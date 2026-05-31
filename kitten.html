@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Милый котёнок</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .kitten-container {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .kitten-container:hover {
+            transform: scale(1.05);
+        }
+
+        .kitten {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .head {
+            position: absolute;
+            width: 160px;
+            height: 140px;
+            background: #f5a962;
+            border-radius: 50% 50% 45% 45%;
+            top: 30px;
+            left: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .ear {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 50px solid #f5a962;
+        }
+
+        .ear-left {
+            top: 0;
+            left: 25px;
+            transform: rotate(-15deg);
+        }
+
+        .ear-right {
+            top: 0;
+            right: 25px;
+            transform: rotate(15deg);
+        }
+
+        .ear-inner {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 25px solid #ffb6c1;
+        }
+
+        .ear-inner-left {
+            top: 15px;
+            left: 38px;
+            transform: rotate(-15deg);
+        }
+
+        .ear-inner-right {
+            top: 15px;
+            right: 38px;
+            transform: rotate(15deg);
+        }
+
+        .eye {
+            position: absolute;
+            width: 35px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            top: 70px;
+        }
+
+        .eye-left {
+            left: 45px;
+        }
+
+        .eye-right {
+            right: 45px;
+        }
+
+        .pupil {
+            position: absolute;
+            width: 18px;
+            height: 25px;
+            background: #2c2c2c;
+            border-radius: 50%;
+            top: 8px;
+            left: 8px;
+            animation: look 4s infinite;
+        }
+
+        .pupil::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            top: 4px;
+            left: 2px;
+        }
+
+        @keyframes look {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        .nose {
+            position: absolute;
+            width: 15px;
+            height: 12px;
+            background: #ff6b8a;
+            border-radius: 50% 50% 40% 40%;
+            top: 115px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mouth {
+            position: absolute;
+            top: 125px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mouth::before,
+        .mouth::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 10px;
+            border: 3px solid #2c2c2c;
+            border-top: none;
+            border-radius: 0 0 50% 50%;
+        }
+
+        .mouth::before {
+            left: -16px;
+        }
+
+        .mouth::after {
+            right: -16px;
+        }
+
+        .whisker {
+            position: absolute;
+            width: 40px;
+            height: 2px;
+            background: #2c2c2c;
+            top: 120px;
+        }
+
+        .whisker-1 { left: -15px; transform: rotate(-10deg); }
+        .whisker-2 { left: -20px; top: 128px; }
+        .whisker-3 { left: -15px; top: 136px; transform: rotate(10deg); }
+        .whisker-4 { right: -15px; transform: rotate(10deg); }
+        .whisker-5 { right: -20px; top: 128px; }
+        .whisker-6 { right: -15px; top: 136px; transform: rotate(-10deg); }
+
+        .body {
+            position: absolute;
+            width: 120px;
+            height: 100px;
+            background: #f5a962;
+            border-radius: 50% 50% 45% 45%;
+            top: 150px;
+            left: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .paw {
+            position: absolute;
+            width: 35px;
+            height: 25px;
+            background: #f5a962;
+            border-radius: 50%;
+            top: 230px;
+        }
+
+        .paw-left {
+            left: 50px;
+        }
+
+        .paw-right {
+            right: 50px;
+        }
+
+        .tail {
+            position: absolute;
+            width: 80px;
+            height: 20px;
+            background: #f5a962;
+            border-radius: 10px;
+            top: 200px;
+            right: -30px;
+            transform-origin: left center;
+            animation: wag 1s ease-in-out infinite;
+        }
+
+        @keyframes wag {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .message {
+            margin-top: 30px;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            font-size: 1.2rem;
+            color: #333;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hearts {
+            position: fixed;
+            pointer-events: none;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: float 3s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-100px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-200px) scale(0.5);
+            }
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Познакомьтесь с Мурзиком! 🐱</h1>
+    
+    <div class="kitten-container" onclick="pet()">
+        <div class="kitten">
+            <div class="ear ear-left"></div>
+            <div class="ear ear-right"></div>
+            <div class="ear-inner ear-inner-left"></div>
+            <div class="ear-inner ear-inner-right"></div>
+            <div class="head">
+                <div class="eye eye-left">
+                    <div class="pupil"></div>
+                </div>
+                <div class="eye eye-right">
+                    <div class="pupil"></div>
+                </div>
+                <div class="nose"></div>
+                <div class="mouth"></div>
+                <div class="whisker whisker-1"></div>
+                <div class="whisker whisker-2"></div>
+                <div class="whisker whisker-3"></div>
+                <div class="whisker whisker-4"></div>
+                <div class="whisker whisker-5"></div>
+                <div class="whisker whisker-6"></div>
+            </div>
+            <div class="body"></div>
+            <div class="paw paw-left"></div>
+            <div class="paw paw-right"></div>
+            <div class="tail"></div>
+        </div>
+    </div>
+
+    <div class="message" id="message">Мурр! Спасибо за ласку! 💕</div>
+    
+    <div class="hearts" id="hearts"></div>
+
+    <p class="footer">Нажмите на котёнка, чтобы погладить</p>
+
+    <script>
+        'use strict';
+
+        const CONFIG = {
+            MESSAGE_DISPLAY_MS: 2000,
+            HEART_COUNT: 5,
+            HEART_SPREAD_PX: 100
+        };
+
+        const messages = [
+            'Мурр! Спасибо за ласку! 💕',
+            'Мяу! Как приятно! 😻',
+            'Мррр... Ещё, пожалуйста! 🐾',
+            'Мяу-мяу! Ты лучший! ❤️',
+            'Пуррр... Обожаю тебя! 🥰'
+        ];
+
+        function getRandomMessage() {
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            return messages[randomIndex];
+        }
+
+        function createHeart(x, y) {
+            const heartsContainer = document.getElementById('hearts');
+            const heart = document.createElement('span');
+            heart.className = 'heart';
+            heart.textContent = '❤️';
+            heart.style.left = (x + Math.random() * CONFIG.HEART_SPREAD_PX - CONFIG.HEART_SPREAD_PX / 2) + 'px';
+            heart.style.top = y + 'px';
+            heartsContainer.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 3000);
+        }
+
+        function pet(event) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = getRandomMessage();
+            messageElement.classList.add('show');
+
+            const kittenRect = document.querySelector('.kitten-container').getBoundingClientRect();
+            const centerX = kittenRect.left + kittenRect.width / 2;
+            const centerY = kittenRect.top;
+
+            for (let i = 0; i < CONFIG.HEART_COUNT; i++) {
+                setTimeout(() => {
+                    createHeart(centerX, centerY);
+                }, i * 100);
+            }
+
+            setTimeout(() => {
+                messageElement.classList.remove('show');
+            }, CONFIG.MESSAGE_DISPLAY_MS);
+        }
+    </script>
+</body>
+</html>
