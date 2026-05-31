@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenFlow — Антистресс Пространство</title>
+  <style>
+    :root {
+      --bg-primary: #0a0b12;
+      --bg-secondary: #11151f;
+      --bg-tertiary: #1a1f2e;
+      --bg-glass: rgba(17, 21, 31, 0.7);
+      --accent-primary: #4f8cff;
+      --accent-secondary: #7b6aff;
+      --accent-pink: #ff6b9d;
+      --accent-cyan: #00d4ff;
+      --accent-green: #00ff88;
+      --accent-orange: #ff9f43;
+      --text-primary: #f5f7fa;
+      --text-secondary: #a1a8b8;
+      --text-muted: #6b7280;
+      --border-primary: rgba(255, 255, 255, 0.08);
+      --glow-blue: 0 0 20px rgba(79, 140, 255, 0.4);
+      --glow-pink: 0 0 20px rgba(255, 107, 157, 0.4);
+      --glow-cyan: 0 0 20px rgba(0, 212, 255, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .bg-orb:nth-child(1) {
+      width: 600px;
+      height: 600px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      top: -200px;
+      left: -200px;
+      animation-delay: 0s;
+    }
+
+    .bg-orb:nth-child(2) {
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-orange));
+      bottom: -150px;
+      right: -150px;
+      animation-delay: -7s;
+    }
+
+    .bg-orb:nth-child(3) {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -14s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(50px, -50px) scale(1.1); }
+      50% { transform: translate(-30px, 30px) scale(0.95); }
+      75% { transform: translate(40px, 40px) scale(1.05); }
+    }
+
+    /* Header */
+    .header {
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-primary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-pink));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: var(--glow-blue); }
+      50% { box-shadow: var(--glow-pink); }
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid var(--border-primary);
+      border-radius: 10px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: white;
+      box-shadow: var(--glow-blue);
+    }
+
+    /* Main Container */
+    .main-container {
+      display: flex;
+      min-height: calc(100vh - 81px);
+    }
+
+    /* Activity Zone */
+    .activity-zone {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title span {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    /* Activity Cards Grid */
+    .activities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .activity-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-primary);
+      border-radius: 20px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .activity-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-pink));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .activity-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-primary);
+      box-shadow: var(--glow-blue);
+    }
+
+    .activity-card:hover::before {
+      opacity: 1;
+    }
+
+    .activity-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .activity-card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .activity-card p {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Bubble Pop Zone */
+    #bubble-zone {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-primary);
+      border-radius: 20px;
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+      cursor: crosshair;
+      display: none;
+    }
+
+    #bubble-zone.active {
+      display: block;
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+      animation: bubbleFloat 3s infinite ease-in-out;
+    }
+
+    .bubble:hover {
+      transform: scale(1.1);
+    }
+
+    @keyframes bubbleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .bubble-pop {
+      animation: pop 0.3s ease-out forwards;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    /* Slime Zone */
+    #slime-zone {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-primary);
+      border-radius: 20px;
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+      display: none;
+    }
+
+    #slime-zone.active {
+      display: block;
+    }
+
+    #slime-canvas {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #slime-canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Drawing Zone */
+    #drawing-zone {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-primary);
+      border-radius: 20px;
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+      display: none;
+    }
+
+    #drawing-zone.active {
+      display: block;
+    }
+
+    #drawing-canvas {
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      background: radial-gradient(circle at 50% 50%, var(--bg-tertiary), var(--bg-primary));
+    }
+
+    .drawing-controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      padding: 12px 20px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      border: 1px solid var(--border-primary);
+    }
+
+    .color-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .color-btn:hover, .color-btn.active {
+      transform: scale(1.2);
+      border-color: white;
+    }
+
+    .tool-btn {
+      padding: 8px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-primary);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tool-btn:hover, .tool-btn.active {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    /* Breathing Zone */
+    #breathing-zone {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      text-align: center;
+    }
+
+    #breathing-zone.active {
+      display: flex;
+    }
+
+    .breathing-circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-primary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .breathing-circle.inhale {
+      animation: breatheIn 4s ease-in-out forwards;
+    }
+
+    .breathing-circle.exhale {
+      animation: breatheOut 4s ease-in-out forwards;
+    }
+
+    .breathing-circle.hold {
+      animation: hold 4s linear forwards;
+    }
+
+    @keyframes breatheIn {
+      0% { transform: scale(0.8); opacity: 0.6; }
+      100% { transform: scale(1.3); opacity: 1; }
+    }
+
+    @keyframes breatheOut {
+      0% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.8); opacity: 0.6; }
+    }
+
+    @keyframes hold {
+      0%, 100% { transform: scale(1.3); box-shadow: 0 0 40px rgba(0, 212, 255, 0.6); }
+      50% { box-shadow: 0 0 60px rgba(0, 212, 255, 0.8); }
+    }
+
+    .breathing-text {
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    .breathing-controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Particle Zone */
+    #particle-zone {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-primary);
+      border-radius: 20px;
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+      display: none;
+    }
+
+    #particle-zone.active {
+      display: block;
+    }
+
+    #particle-canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Sound Panel */
+    #sound-zone {
+      display: none;
+    }
+
+    #sound-zone.active {
+      display: block;
+    }
+
+    .sounds-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+    }
+
+    .sound-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-primary);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .sound-card:hover {
+      transform: scale(1.05);
+      border-color: var(--accent-primary);
+    }
+
+    .sound-card.playing {
+      background: linear-gradient(135deg, rgba(79, 140, 255, 0.2), rgba(123, 106, 255, 0.2));
+      border-color: var(--accent-primary);
+      box-shadow: var(--glow-blue);
+    }
+
+    .sound-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .sound-name {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .sound-card input[type="range"] {
+      width: 100%;
+      margin-top: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sound-card.playing input[type="range"] {
+      opacity: 1;
+    }
+
+    /* Chat Panel */
+    .chat-panel {
+      width: 380px;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border-primary);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .chat-panel.hidden {
+      transform: translateX(100%);
+      position: absolute;
+      right: 0;
+      top: 81px;
+      bottom: 0;
+    }
+
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-orange));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .chat-name {
+      font-weight: 600;
+    }
+
+    .chat-status {
+      font-size: 12px;
+      color: var(--accent-green);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      animation: messageSlide 0.3s ease-out;
+    }
+
+    @keyframes messageSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.bot {
+      background: var(--bg-tertiary);
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+
+    .message.user {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+
+    .message.typing {
+      display: flex;
+      gap: 4px;
+      padding: 16px 20px;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: typingBounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-6px); }
+    }
+
+    .chat-input-area {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-primary);
+      display: flex;
+      gap: 12px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-primary);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .chat-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.1);
+    }
+
+    .send-btn {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: var(--glow-blue);
+    }
+
+    /* Quick Actions in Chat */
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 20px 16px;
+    }
+
+    .quick-btn {
+      padding: 8px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-primary);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .quick-btn:hover {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: white;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      padding: 12px 20px;
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Confetti */
+    .confetti {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      animation: confettiFall 3s ease-out forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .chat-panel {
+        position: fixed;
+        right: 0;
+        top: 81px;
+        bottom: 0;
+        z-index: 50;
+      }
+      
+      .chat-panel.hidden {
+        transform: translateX(100%);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 16px 20px;
+      }
+      
+      .logo-text {
+        display: none;
+      }
+      
+      .activity-zone {
+        padding: 20px;
+      }
+      
+      .chat-panel {
+        width: 100%;
+      }
+    }
+
+    /* Toggle Chat Button */
+    .toggle-chat {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-orange));
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+      transition: all 0.3s ease;
+      z-index: 200;
+      display: none;
+    }
+
+    .toggle-chat:hover {
+      transform: scale(1.1);
+    }
+
+    .toggle-chat.visible {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Achievement Popup */
+    .achievement {
+      position: fixed;
+      top: 100px;
+      right: 30px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--accent-green);
+      border-radius: 16px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 1000;
+      animation: achievementSlide 0.5s ease-out, achievementFade 0.5s ease-out 3s forwards;
+      box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+    }
+
+    @keyframes achievementSlide {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes achievementFade {
+      to { transform: translateX(100%); opacity: 0; }
+    }
+
+    .achievement-icon {
+      font-size: 32px;
+    }
+
+    .achievement-text h4 {
+      color: var(--accent-green);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .achievement-text p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">🧘</div>
+      <span class="logo-text">ZenFlow</span>
+    </div>
+    <nav class="nav-menu">
+      <button class="nav-btn active" data-section="activities">🎮 Активности</button>
+      <button class="nav-btn" data-section="sounds">🎵 Звуки</button>
+      <button class="nav-btn" data-section="breathing">🌬️ Дыхание</button>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Activity Zone -->
+    <div class="activity-zone">
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-value" id="bubbles-popped">0</div>
+          <div class="stat-label">Пузырей лопнуто</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="time-spent">0:00</div>
+          <div class="stat-label">Время релакса</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stress-level">😌</div>
+          <div class="stat-label">Настроение</div>
+        </div>
+      </div>
+
+      <!-- Activities Section -->
+      <section id="activities-section">
+        <h2 class="section-title">🎮 <span>Антистресс Активности</span></h2>
+        <p class="section-subtitle">Выберите активность для расслабления</p>
+        
+        <div class="activities-grid">
+          <div class="activity-card" data-activity="bubbles">
+            <div class="activity-icon" style="background: linear-gradient(135deg, #4f8cff, #00d4ff);">🫧</div>
+            <h3>Лопай пузыри</h3>
+            <p>Классический антистресс — лопайте пузыри касанием</p>
+          </div>
+          
+          <div class="activity-card" data-activity="slime">
+            <div class="activity-icon" style="background: linear-gradient(135deg, #00ff88, #00d4ff);">🟢</div>
+            <h3>Слайм симулятор</h3>
+            <p>Тяните и растягивайте виртуальный слайм</p>
+          </div>
+          
+          <div class="activity-card" data-activity="drawing">
+            <div class="activity-icon" style="background: linear-gradient(135deg, #ff6b9d, #ff9f43);">🎨</div>
+            <h3>Неоновое рисование</h3>
+            <p>Рисуйте светящиеся линии на тёмном фоне</p>
+          </div>
+          
+          <div class="activity-card" data-activity="particles">
+            <div class="activity-icon" style="background: linear-gradient(135deg, #7b6aff, #4f8cff);">✨</div>
+            <h3>Частицы</h3>
+            <p>Создавайте магические потоки частиц движением мыши</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bubble Zone -->
+      <div id="bubble-zone"></div>
+
+      <!-- Slime Zone -->
+      <div id="slime-zone">
+        <canvas id="slime-canvas"></canvas>
+      </div>
+
+      <!-- Drawing Zone -->
+      <div id="drawing-zone">
+        <canvas id="drawing-canvas"></canvas>
+        <div class="drawing-controls">
+          <button class="color-btn active" style="background: #4f8cff;" data-color="#4f8cff"></button>
+          <button class="color-btn" style="background: #ff6b9d;" data-color="#ff6b9d"></button>
+          <button class="color-btn" style="background: #00ff88;" data-color="#00ff88"></button>
+          <button class="color-btn" style="background: #ff9f43;" data-color="#ff9f43"></button>
+          <button class="color-btn" style="background: #ffffff;" data-color="#ffffff"></button>
+          <button class="tool-btn" id="clear-canvas">Очистить</button>
+          <button class="tool-btn" id="rainbow-mode">🌈 Радуга</button>
+        </div>
+      </div>
+
+      <!-- Particle Zone -->
+      <div id="particle-zone">
+        <canvas id="particle-canvas"></canvas>
+      </div>
+
+      <!-- Breathing Zone -->
+      <section id="breathing-zone">
+        <h2 class="section-title">🌬️ <span>Дыхательная практика</span></h2>
+        <p class="section-subtitle">Следуйте за кругом для глубокого расслабления</p>
+        
+        <div class="breathing-circle" id="breathing-circle">
+          <span id="breathing-text">Старт</span>
+        </div>
+        
+        <div class="breathing-text" id="breathing-instruction">Нажмите, чтобы начать</div>
+        
+        <div class="breathing-controls">
+          <button class="nav-btn" id="start-breathing">▶️ Начать</button>
+          <button class="nav-btn" id="stop-breathing" style="display: none;">⏹️ Стоп</button>
+        </div>
+      </section>
+
+      <!-- Sounds Zone -->
+      <section id="sound-zone">
+        <h2 class="section-title">🎵 <span>Расслабляющие звуки</span></h2>
+        <p class="section-subtitle">Смешивайте звуки для идеальной атмосферы</p>
+        
+        <div class="sounds-grid">
+          <div class="sound-card" data-sound="rain">
+            <div class="sound-icon">🌧️</div>
+            <div class="sound-name">Дождь</div>
+            <input type="range" min="0" max="100" value="50">
+          </div>
+          
+          <div class="sound-card" data-sound="fire">
+            <div class="sound-icon">🔥</div>
+            <div class="sound-name">Костёр</div>
+            <input type="range" min="0" max="100" value="50">
+          </div>
+          
+          <div class="sound-card" data-sound="waves">
+            <div class="sound-icon">🌊</div>
+            <div class="sound-name">Океан</div>
+            <input type="range" min="0" max="100" value="50">
+          </div>
+          
+          <div class="sound-card" data-sound="forest">
+            <div class="sound-icon">🌲</div>
+            <div class="sound-name">Лес</div>
+            <input type="range" min="0" max="100" value="50">
+          </div>
+          
+          <div class="sound-card" data-sound="wind">
+            <div class="sound-icon">💨</div>
+            <div class="sound-name">Ветер</div>
+            <input type="range" min="0" max="100" value="50">
+          </div>
+          
+          <div class="sound-card" data-sound="birds">
+            <div class="sound-icon">🐦</div>
+            <div class="sound-name">Птицы</div>
+            <input type="range" min="0" max="100" value="50">
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Chat Panel -->
+    <aside class="chat-panel" id="chat-panel">
+      <div class="chat-header">
+        <div class="chat-title">
+          <div class="chat-avatar">🤖</div>
+          <div>
+            <div class="chat-name">ZenBot</div>
+            <div class="chat-status">● Онлайн</div>
+          </div>
+        </div>
+        <button class="nav-btn" id="close-chat">✕</button>
+      </div>
+      
+      <div class="quick-actions">
+        <button class="quick-btn" data-message="Мне грустно">😢 Грустно</button>
+        <button class="quick-btn" data-message="Я устал">😴 Устал</button>
+        <button class="quick-btn" data-message="Мне тревожно">😰 Тревожно</button>
+        <button class="quick-btn" data-message="Расскажи шутку">😄 Шутка</button>
+        <button class="quick-btn" data-message="Дай совет">💡 Совет</button>
+      </div>
+      
+      <div class="chat-messages" id="chat-messages">
+        <div class="message bot">
+          Привет! 👋 Я ZenBot — твой помощник для расслабления. Расскажи, как ты себя чувствуешь?
+        </div>
+      </div>
+      
+      <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chat-input" placeholder="Напишите сообщение...">
+        <button class="send-btn" id="send-message">➤</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Toggle Chat Button (mobile) -->
+  <button class="toggle-chat" id="toggle-chat">💬</button>
+
+  <script>
+    // ============ CONFIGURATION ============
+    const CONFIG = {
+      BUBBLE: {
+        MIN_SIZE: 40,
+        MAX_SIZE: 80,
+        SPAWN_INTERVAL: 800,
+        MAX_BUBBLES: 15,
+        COLORS: [
+          'linear-gradient(135deg, #4f8cff, #00d4ff)',
+          'linear-gradient(135deg, #ff6b9d, #ff9f43)',
+          'linear-gradient(135deg, #00ff88, #00d4ff)',
+          'linear-gradient(135deg, #7b6aff, #4f8cff)',
+          'linear-gradient(135deg, #ff9f43, #ff6b9d)'
+        ]
+      },
+      BREATHING: {
+        INHALE_DURATION: 4000,
+        HOLD_DURATION: 4000,
+        EXHALE_DURATION: 4000
+      },
+      PARTICLE: {
+        COUNT: 100,
+        TRAIL_LENGTH: 20
+      }
+    };
+
+    // ============ STATE ============
+    const state = {
+      bubblesPopped: 0,
+      startTime: Date.now(),
+      currentActivity: null,
+      breathingActive: false,
+      drawingColor: '#4f8cff',
+      rainbowMode: false,
+      particles: [],
+      chatHistory: []
+    };
+
+    // ============ DOM ELEMENTS ============
+    const elements = {
+      bubbleZone: document.getElementById('bubble-zone'),
+      slimeZone: document.getElementById('slime-zone'),
+      slimeCanvas: document.getElementById('slime-canvas'),
+      drawingZone: document.getElementById('drawing-zone'),
+      drawingCanvas: document.getElementById('drawing-canvas'),
+      particleZone: document.getElementById('particle-zone'),
+      particleCanvas: document.getElementById('particle-canvas'),
+      breathingZone: document.getElementById('breathing-zone'),
+      soundZone: document.getElementById('sound-zone'),
+      activitiesSection: document.getElementById('activities-section'),
+      chatPanel: document.getElementById('chat-panel'),
+      chatMessages: document.getElementById('chat-messages'),
+      chatInput: document.getElementById('chat-input'),
+      bubblesPopped: document.getElementById('bubbles-popped'),
+      timeSpent: document.getElementById('time-spent'),
+      stressLevel: document.getElementById('stress-level'),
+      breathingCircle: document.getElementById('breathing-circle'),
+      breathingText: document.getElementById('breathing-text'),
+      breathingInstruction: document.getElementById('breathing-instruction')
+    };
+
+    // ============ NAVIGATION ============
+    document.querySelectorAll('.nav-btn[data-section]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn[data-section]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const section = btn.dataset.section;
+        hideAllZones();
+        
+        if (section === 'activities') {
+          elements.activitiesSection.style.display = 'block';
+        } else if (section === 'sounds') {
+          elements.soundZone.classList.add('active');
+        } else if (section === 'breathing') {
+          elements.breathingZone.classList.add('active');
+        }
+      });
+    });
+
+    // ============ ACTIVITY CARDS ============
+    document.querySelectorAll('.activity-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const activity = card.dataset.activity;
+        startActivity(activity);
+      });
+    });
+
+    function startActivity(activity) {
+      hideAllZones();
+      state.currentActivity = activity;
+      
+      switch(activity) {
+        case 'bubbles':
+          elements.bubbleZone.classList.add('active');
+          startBubbleGame();
+          break;
+        case 'slime':
+          elements.slimeZone.classList.add('active');
+          initSlime();
+          break;
+        case 'drawing':
+          elements.drawingZone.classList.add('active');
+          initDrawing();
+          break;
+        case 'particles':
+          elements.particleZone.classList.add('active');
+          initParticles();
+          break;
+      }
+    }
+
+    function hideAllZones() {
+      elements.activitiesSection.style.display = 'none';
+      elements.bubbleZone.classList.remove('active');
+      elements.slimeZone.classList.remove('active');
+      elements.drawingZone.classList.remove('active');
+      elements.particleZone.classList.remove('active');
+      elements.breathingZone.classList.remove('active');
+      elements.soundZone.classList.remove('active');
+      
+      if (state.bubbleInterval) clearInterval(state.bubbleInterval);
+      if (state.particleAnimation) cancelAnimationFrame(state.particleAnimation);
+    }
+
+    // ============ BUBBLE GAME ============
+    function startBubbleGame() {
+      elements.bubbleZone.innerHTML = '';
+      
+      state.bubbleInterval = setInterval(() => {
+        if (elements.bubbleZone.children.length < CONFIG.BUBBLE.MAX_BUBBLES) {
+          createBubble();
+        }
+      }, CONFIG.BUBBLE.SPAWN_INTERVAL);
+      
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => createBubble(), i * 200);
+      }
+    }
+
+    function createBubble() {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      
+      const size = CONFIG.BUBBLE.MIN_SIZE + Math.random() * (CONFIG.BUBBLE.MAX_SIZE - CONFIG.BUBBLE.MIN_SIZE);
+      const x = Math.random() * (elements.bubbleZone.offsetWidth - size);
+      const y = Math.random() * (elements.bubbleZone.offsetHeight - size);
+      const color = CONFIG.BUBBLE.COLORS[Math.floor(Math.random() * CONFIG.BUBBLE.COLORS.length)];
+      
+      bubble.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}px;
+        top: ${y}px;
+        background: ${color};
+        box-shadow: 0 0 ${size/2}px rgba(255,255,255,0.3), inset 0 0 ${size/3}px rgba(255,255,255,0.5);
+        animation-delay: ${Math.random() * 2}s;
+      `;
+      
+      bubble.addEventListener('click', () => popBubble(bubble));
+      bubble.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        popBubble(bubble);
+      });
+      
+      elements.bubbleZone.appendChild(bubble);
+    }
+
+    function popBubble(bubble) {
+      bubble.classList.add('bubble-pop');
+      state.bubblesPopped++;
+      elements.bubblesPopped.textContent = state.bubblesPopped;
+      updateStressLevel();
+      
+      // Sound effect simulation (visual feedback)
+      bubble.style.boxShadow = '0 0 50px rgba(255,255,255,0.8)';
+      
+      setTimeout(() => {
+        bubble.remove();
+        createBubble();
+      }, 300);
+      
+      // Achievement check
+      if (state.bubblesPopped === 10) {
+        showAchievement('🎈', 'Первые 10!', 'Вы лопнули 10 пузырей');
+      } else if (state.bubblesPopped === 50) {
+        showAchievement('🏆', 'Мастер пузырей!', '50 пузырей лопнуто');
+        createConfetti();
+      } else if (state.bubblesPopped === 100) {
+        showAchievement('👑', 'Легенда!', '100 пузырей — вы великолепны!');
+        createConfetti();
+      }
+    }
+
+    // ============ SLIME SIMULATOR ============
+    function initSlime() {
+      const canvas = elements.slimeCanvas;
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = elements.slimeZone.offsetWidth;
+      canvas.height = elements.slimeZone.offsetHeight;
+      
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const baseRadius = 100;
+      
+      let points = [];
+      const numPoints = 20;
+      
+      for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * Math.PI * 2;
+        points.push({
+          x: centerX + Math.cos(angle) * baseRadius,
+          y: centerY + Math.sin(angle) * baseRadius,
+          baseX: centerX + Math.cos(angle) * baseRadius,
+          baseY: centerY + Math.sin(angle) * baseRadius,
+          vx: 0,
+          vy: 0
+        });
+      }
+      
+      let mouseX = centerX;
+      let mouseY = centerY;
+      let isPressed = false;
+      
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+      });
+      
+      canvas.addEventListener('mousedown', () => isPressed = true);
+      canvas.addEventListener('mouseup', () => isPressed = false);
+      canvas.addEventListener('mouseleave', () => isPressed = false);
+      
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.touches[0].clientX - rect.left;
+        mouseY = e.touches[0].clientY - rect.top;
+      });
+      
+      canvas.addEventListener('touchstart', () => isPressed = true);
+      canvas.addEventListener('touchend', () => isPressed = false);
+      
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Update points
+        points.forEach(point => {
+          const dx = mouseX - point.x;
+          const dy = mouseY - point.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (isPressed && dist < 150) {
+            const force = (150 - dist) / 150;
+            point.vx += dx * force * 0.1;
+            point.vy += dy * force * 0.1;
+          }
+          
+          // Spring back to base
+          point.vx += (point.baseX - point.x) * 0.05;
+          point.vy += (point.baseY - point.y) * 0.05;
+          
+          // Damping
+          point.vx *= 0.9;
+          point.vy *= 0.9;
+          
+          point.x += point.vx;
+          point.y += point.vy;
+        });
+        
+        // Draw slime
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        
+        for (let i = 0; i < points.length; i++) {
+          const p1 = points[i];
+          const p2 = points[(i + 1) % points.length];
+          const mx = (p1.x + p2.x) / 2;
+          const my = (p1.y + p2.y) / 2;
+          ctx.quadraticCurveTo(p1.x, p1.y, mx, my);
+        }
+        
+        ctx.closePath();
+        
+        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 150);
+        gradient.addColorStop(0, 'rgba(0, 255, 136, 0.9)');
+        gradient.addColorStop(0.5, 'rgba(0, 212, 255, 0.7)');
+        gradient.addColorStop(1, 'rgba(79, 140, 255, 0.5)');
+        
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        
+        // Highlight
+        ctx.beginPath();
+        ctx.ellipse(centerX - 30, centerY - 40, 20, 15, -0.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fill();
+        
+        if (state.currentActivity === 'slime') {
+          requestAnimationFrame(animate);
+        }
+      }
+      
+      animate();
+    }
+
+    // ============ DRAWING CANVAS ============
+    function initDrawing() {
+      const canvas = elements.drawingCanvas;
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = elements.drawingZone.offsetWidth;
+      canvas.height = elements.drawingZone.offsetHeight;
+      
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+      let hue = 0;
+      
+      function draw(e) {
+        if (!isDrawing) return;
+        
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches[0].clientY) - rect.top;
+        
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        
+        if (state.rainbowMode) {
+          ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+          hue = (hue + 2) % 360;
+        } else {
+          ctx.strokeStyle = state.drawingColor;
+        }
+        
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.shadowColor = ctx.strokeStyle;
+        ctx.shadowBlur = 15;
+        ctx.stroke();
+        
+        lastX = x;
+        lastY = y;
+      }
+      
+      canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        lastX = e.clientX - rect.left;
+        lastY = e.clientY - rect.top;
+      });
+      
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', () => isDrawing = false);
+      canvas.addEventListener('mouseout', () => isDrawing = false);
+      
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        lastX = e.touches[0].clientX - rect.left;
+        lastY = e.touches[0].clientY - rect.top;
+      });
+      
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        draw(e);
+      });
+      
+      canvas.addEventListener('touchend', () => isDrawing = false);
+    }
+
+    // Drawing controls
+    document.querySelectorAll('.color-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.drawingColor = btn.dataset.color;
+        state.rainbowMode = false;
+        document.getElementById('rainbow-mode').classList.remove('active');
+      });
+    });
+
+    document.getElementById('clear-canvas').addEventListener('click', () => {
+      const canvas = elements.drawingCanvas;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    document.getElementById('rainbow-mode').addEventListener('click', (e) => {
+      state.rainbowMode = !state.rainbowMode;
+      e.target.classList.toggle('active');
+      if (state.rainbowMode) {
+        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      }
+    });
+
+    // ============ PARTICLE SYSTEM ============
+    function initParticles() {
+      const canvas = elements.particleCanvas;
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = elements.particleZone.offsetWidth;
+      canvas.height = elements.particleZone.offsetHeight;
+      
+      let mouseX = canvas.width / 2;
+      let mouseY = canvas.height / 2;
+      
+      class Particle {
+        constructor() {
+          this.reset();
+        }
+        
+        reset() {
+          this.x = mouseX;
+          this.y = mouseY;
+          this.size = Math.random() * 4 + 2;
+          this.speedX = (Math.random() - 0.5) * 4;
+          this.speedY = (Math.random() - 0.5) * 4;
+          this.life = 1;
+          this.decay = Math.random() * 0.02 + 0.005;
+          this.hue = Math.random() * 60 + 180; // Blue to cyan range
+        }
+        
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          this.life -= this.decay;
+          this.size *= 0.99;
+          
+          if (this.life <= 0) {
+            this.reset();
+          }
+        }
+        
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${this.hue}, 100%, 60%, ${this.life})`;
+          ctx.shadowColor = `hsla(${this.hue}, 100%, 60%, 0.8)`;
+          ctx.shadowBlur = 20;
+          ctx.fill();
+        }
+      }
+      
+      const particles = [];
+      for (let i = 0; i < CONFIG.PARTICLE.COUNT; i++) {
+        particles.push(new Particle());
+      }
+      
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+      });
+      
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.touches[0].clientX - rect.left;
+        mouseY = e.touches[0].clientY - rect.top;
+      });
+      
+      function animate() {
+        ctx.fillStyle = 'rgba(10, 11, 18, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        
+        if (state.currentActivity === 'particles') {
+          state.particleAnimation = requestAnimationFrame(animate);
+        }
+      }
+      
+      animate();
+    }
+
+    // ============ BREATHING EXERCISE ============
+    let breathingInterval = null;
+
+    document.getElementById('start-breathing').addEventListener('click', startBreathing);
+    document.getElementById('stop-breathing').addEventListener('click', stopBreathing);
+
+    function startBreathing() {
+      state.breathingActive = true;
+      document.getElementById('start-breathing').style.display = 'none';
+      document.getElementById('stop-breathing').style.display = 'inline-flex';
+      
+      runBreathingCycle();
+    }
+
+    function stopBreathing() {
+      state.breathingActive = false;
+      document.getElementById('start-breathing').style.display = 'inline-flex';
+      document.getElementById('stop-breathing').style.display = 'none';
+      
+      elements.breathingCircle.className = 'breathing-circle';
+      elements.breathingText.textContent = 'Старт';
+      elements.breathingInstruction.textContent = 'Нажмите, чтобы начать';
+      
+      if (breathingInterval) clearInterval(breathingInterval);
+    }
+
+    function runBreathingCycle() {
+      if (!state.breathingActive) return;
+      
+      // Inhale
+      elements.breathingCircle.className = 'breathing-circle inhale';
+      elements.breathingText.textContent = '4';
+      elements.breathingInstruction.textContent = 'Вдыхайте...';
+      
+      let count = 4;
+      breathingInterval = setInterval(() => {
+        count--;
+        if (count > 0) elements.breathingText.textContent = count;
+      }, 1000);
+      
+      setTimeout(() => {
+        clearInterval(breathingInterval);
+        if (!state.breathingActive) return;
+        
+        // Hold
+        elements.breathingCircle.className = 'breathing-circle hold';
+        elements.breathingText.textContent = '4';
+        elements.breathingInstruction.textContent = 'Задержите дыхание...';
+        
+        count = 4;
+        breathingInterval = setInterval(() => {
+          count--;
+          if (count > 0) elements.breathingText.textContent = count;
+        }, 1000);
+        
+        setTimeout(() => {
+          clearInterval(breathingInterval);
+          if (!state.breathingActive) return;
+          
+          // Exhale
+          elements.breathingCircle.className = 'breathing-circle exhale';
+          elements.breathingText.textContent = '4';
+          elements.breathingInstruction.textContent = 'Выдыхайте...';
+          
+          count = 4;
+          breathingInterval = setInterval(() => {
+            count--;
+            if (count > 0) elements.breathingText.textContent = count;
+          }, 1000);
+          
+          setTimeout(() => {
+            clearInterval(breathingInterval);
+            runBreathingCycle();
+          }, CONFIG.BREATHING.EXHALE_DURATION);
+          
+        }, CONFIG.BREATHING.HOLD_DURATION);
+        
+      }, CONFIG.BREATHING.INHALE_DURATION);
+    }
+
+    // ============ SOUND CARDS ============
+    document.querySelectorAll('.sound-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('playing');
+        // In a real app, this would play/pause actual audio
+      });
+    });
+
+    // ============ CHAT BOT ============
+    const botResponses = {
+      greetings: [
+        'Привет! Рад тебя видеть! 😊',
+        'Здравствуй! Как настроение сегодня?',
+        'Приветик! Готов помочь тебе расслабиться!'
+      ],
+      sad: [
+        'Понимаю тебя... Иногда грусть накатывает. Попробуй глубоко подышать — это помогает. 💙',
+        'Грустить — это нормально. Может, попробуешь полопать пузыри? Это отвлекает и расслабляет. 🫧',
+        'Обними себя прямо сейчас. Ты заслуживаешь тепла и заботы. 🤗'
+      ],
+      tired: [
+        'Усталость — сигнал, что пора отдохнуть. Включи расслабляющие звуки и просто подыши. 😴',
+        'Попробуй технику 4-4-4: вдох 4 сек, задержка 4 сек, выдох 4 сек. Это восстанавливает энергию. 🌬️',
+        'Иногда достаточно просто посидеть в тишине 5 минут. Разреши себе это. ✨'
+      ],
+      anxious: [
+        'Тревога временна. Сосредоточься на 5 вещах, которые ты видишь вокруг. Это заземляет. 🌱',
+        'Попробуй порисовать — творчество отвлекает тревожные мысли. 🎨',
+        'Вдох... выдох... Ты в безопасности прямо сейчас. Всё пройдёт. 💫'
+      ],
+      jokes: [
+        'Почему программист ушёл с работы? Потому что он не получил массив (arrays)! 😄',
+        'Что сказал ноль восьмёрке? — Классный ремень! 🤣',
+        'Почему чайка летит над морем? Потому что если бы она летела над заливом, она была бы залив-ка! 😂',
+        'Муха села на варенье — вот и всё стихотворенье! 🪰'
+      ],
+      advice: [
+        '💡 Совет дня: Уделяй 10 минут в день только себе. Без телефона, без задач — только ты и тишина.',
+        '💡 Пей больше воды! Обезвоживание усиливает стресс и усталость.',
+        '💡 Записывай 3 вещи, за которые благодарен, перед сном. Это меняет фокус мышления.',
+        '💡 Делай перерывы каждые 45 минут работы. Мозгу нужен отдых!'
+      ],
+      default: [
+        'Интересно! Расскажи подробнее? 🤔',
+        'Я слушаю тебя. Что ещё у тебя на душе?',
+        'Понимаю. А что ты чувствуешь прямо сейчас?',
+        'Спасибо, что делишься. Чем я могу помочь?'
+      ]
+    };
+
+    function getBotResponse(message) {
+      const lower = message.toLowerCase();
+      
+      if (lower.includes('привет') || lower.includes('здравствуй') || lower.includes('хай') || lower.includes('hello')) {
+        return randomItem(botResponses.greetings);
+      }
+      if (lower.includes('грустно') || lower.includes('грусть') || lower.includes('плохо') || lower.includes('печаль')) {
+        return randomItem(botResponses.sad);
+      }
+      if (lower.includes('устал') || lower.includes('усталость') || lower.includes('сил нет') || lower.includes('вымотан')) {
+        return randomItem(botResponses.tired);
+      }
+      if (lower.includes('тревож') || lower.includes('страшно') || lower.includes('волну') || lower.includes('паник')) {
+        return randomItem(botResponses.anxious);
+      }
+      if (lower.includes('шутк') || lower.includes('смеш') || lower.includes('анекдот')) {
+        return randomItem(botResponses.jokes);
+      }
+      if (lower.includes('совет') || lower.includes('помоги') || lower.includes('подскажи')) {
+        return randomItem(botResponses.advice);
+      }
+      
+      return randomItem(botResponses.default);
+    }
+
+    function randomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+      messageDiv.textContent = text;
+      elements.chatMessages.appendChild(messageDiv);
+      elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+    }
+
+    function showTyping() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message bot typing';
+      typingDiv.id = 'typing-indicator';
+      typingDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+      elements.chatMessages.appendChild(typingDiv);
+      elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+    }
+
+    function hideTyping() {
+      const typing = document.getElementById('typing-indicator');
+      if (typing) typing.remove();
+    }
+
+    function sendMessage() {
+      const text = elements.chatInput.value.trim();
+      if (!text) return;
+      
+      addMessage(text, true);
+      elements.chatInput.value = '';
+      
+      showTyping();
+      
+      setTimeout(() => {
+        hideTyping();
+        const response = getBotResponse(text);
+        addMessage(response);
+      }, 1000 + Math.random() * 1000);
+    }
+
+    document.getElementById('send-message').addEventListener('click', sendMessage);
+    elements.chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Quick action buttons
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        elements.chatInput.value = btn.dataset.message;
+        sendMessage();
+      });
+    });
+
+    // Chat toggle
+    document.getElementById('close-chat').addEventListener('click', () => {
+      elements.chatPanel.classList.add('hidden');
+      document.getElementById('toggle-chat').classList.add('visible');
+    });
+
+    document.getElementById('toggle-chat').addEventListener('click', () => {
+      elements.chatPanel.classList.remove('hidden');
+      document.getElementById('toggle-chat').classList.remove('visible');
+    });
+
+    // ============ STATS & ACHIEVEMENTS ============
+    function updateStressLevel() {
+      const popped = state.bubblesPopped;
+      let emoji = '😌';
+      
+      if (popped >= 100) emoji = '🧘';
+      else if (popped >= 50) emoji = '😊';
+      else if (popped >= 20) emoji = '🙂';
+      else if (popped >= 10) emoji = '😌';
+      else emoji = '😐';
+      
+      elements.stressLevel.textContent = emoji;
+    }
+
+    function updateTimeSpent() {
+      const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      elements.timeSpent.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    setInterval(updateTimeSpent, 1000);
+
+    function showAchievement(icon, title, description) {
+      const achievement = document.createElement('div');
+      achievement.className = 'achievement';
+      achievement.innerHTML = `
+        <div class="achievement-icon">${icon}</div>
+        <div class="achievement-text">
+          <h4>${title}</h4>
+          <p>${description}</p>
+        </div>
+      `;
+      document.body.appendChild(achievement);
+      
+      setTimeout(() => achievement.remove(), 4000);
+    }
+
+    function createConfetti() {
+      const container = document.createElement('div');
+      container.className = 'confetti';
+      document.body.appendChild(container);
+      
+      const colors = ['#4f8cff', '#ff6b9d', '#00ff88', '#ff9f43', '#7b6aff', '#00d4ff'];
+      
+      for (let i = 0; i < 100; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.cssText = `
+          left: ${Math.random() * 100}vw;
+          top: -20px;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          transform: rotate(${Math.random() * 360}deg);
+          animation-delay: ${Math.random() * 0.5}s;
+          animation-duration: ${2 + Math.random() * 2}s;
+        `;
+        container.appendChild(piece);
+      }
+      
+      setTimeout(() => container.remove(), 4000);
+    }
+
+    // ============ BACK BUTTON ============
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && state.currentActivity) {
+        hideAllZones();
+        elements.activitiesSection.style.display = 'block';
+        state.currentActivity = null;
+        document.querySelector('.nav-btn[data-section="activities"]').click();
+      }
+    });
+
+    // Add click to go back on zones
+    [elements.bubbleZone, elements.slimeZone, elements.drawingZone, elements.particleZone].forEach(zone => {
+      zone.addEventListener('dblclick', () => {
+        hideAllZones();
+        elements.activitiesSection.style.display = 'block';
+        state.currentActivity = null;
+      });
+    });
+
+    // ============ INIT ============
+    elements.activitiesSection.style.display = 'block';
+    
+    // Responsive chat
+    function checkChatVisibility() {
+      if (window.innerWidth <= 1024) {
+        elements.chatPanel.classList.add('hidden');
+        document.getElementById('toggle-chat').classList.add('visible');
+      } else {
+        elements.chatPanel.classList.remove('hidden');
+        document.getElementById('toggle-chat').classList.remove('visible');
+      }
+    }
+    
+    window.addEventListener('resize', checkChatVisibility);
+    checkChatVisibility();
+
+    console.log('🧘 ZenFlow Antistress App Loaded!');
+  </script>
+</body>
+</html>
