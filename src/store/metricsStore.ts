@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { generateId } from '@shared';
 import type { Metric, MetricGroup, ApiStatus } from '@shared';
 
 interface MetricsState {
@@ -14,8 +15,6 @@ interface MetricsState {
   loadMetricGroups: (groups: MetricGroup[]) => void;
   loadApiStatuses: (statuses: ApiStatus[]) => void;
 }
-
-const generateId = () => Math.random().toString(36).substring(2, 9);
 
 export const useMetricsStore = create<MetricsState>((set) => ({
   metricGroups: [

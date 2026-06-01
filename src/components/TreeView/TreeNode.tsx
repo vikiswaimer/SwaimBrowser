@@ -171,7 +171,13 @@ export function TreeNodeItem({
 
         {node.url && (
           <span className={styles.nodeUrl} title={node.url}>
-            {new URL(node.url).hostname}
+            {(() => {
+              try {
+                return new URL(node.url).hostname;
+              } catch {
+                return node.url;
+              }
+            })()}
           </span>
         )}
       </div>

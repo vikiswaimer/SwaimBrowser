@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { generateId } from '@shared';
 import type { Hypothesis, Sprint, SprintTask, HypothesisStatus } from '@shared';
 
 interface HypothesesState {
@@ -23,8 +24,6 @@ interface HypothesesState {
   loadSprints: (sprints: Sprint[]) => void;
   loadTasks: (tasks: SprintTask[]) => void;
 }
-
-const generateId = () => Math.random().toString(36).substring(2, 9);
 
 export const useHypothesesStore = create<HypothesesState>((set, get) => ({
   hypotheses: [

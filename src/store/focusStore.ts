@@ -19,10 +19,33 @@ interface FocusState {
   setDuration: (duration: FocusDuration) => void;
   setGoal: (goal: string) => void;
   start: () => void;
-  stop: () => void;
+  stop: (wasCompleted?: boolean) => void;
   toggle: () => void;
   tick: () => void;
   loadSessions: (sessions: FocusSession[]) => void;
+}
+
+function showSessionCompleteNotification(session: FocusSession): void {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    const notification = new Notification('Deep Work Complete!', {
+      body: session.goal 
+        ? `Great job! You completed "${session.goal}"` 
+        : `${session.durationMinutes} minute session completed!`,
+      icon: '/favicon.ico',
+      tag: 'focus-complete',
+    });
+    
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+  }
+}
+
+function requestNotificationPermission(): void {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
 }
 
 export const useFocusStore = create<FocusState>((set, get) => ({
@@ -49,6 +72,8 @@ export const useFocusStore = create<FocusState>((set, get) => ({
 
   start: () => {
     const { selectedDuration, currentGoal } = get();
+    requestNotificationPermission();
+    
     const session: FocusSession = {
       id: generateId(),
       startTime: new Date().toISOString(),
@@ -57,28 +82,45 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       completed: false,
       blockedAttempts: [],
     };
+    
+    const seconds = minutesToSeconds(selectedDuration);
     set({
       isActive: true,
       currentSession: session,
-      remainingSeconds: minutesToSeconds(selectedDuration),
+      remainingSeconds: seconds,
+      timerDisplay: formatTimeDisplay(seconds),
     });
   },
 
-  stop: () => {
-    const { currentSession, sessions } = get();
+  stop: (wasCompleted = false) => {
+    const { currentSession, sessions, selectedDuration } = get();
+    
     if (currentSession) {
       const completedSession: FocusSession = {
         ...currentSession,
         endTime: new Date().toISOString(),
-        completed: true,
+        completed: wasCompleted,
       };
+      
+      if (wasCompleted) {
+        showSessionCompleteNotification(completedSession);
+      }
+      
+      const initialSeconds = minutesToSeconds(selectedDuration);
       set({
         isActive: false,
         currentSession: null,
         sessions: [...sessions, completedSession],
+        remainingSeconds: initialSeconds,
+        timerDisplay: formatTimeDisplay(initialSeconds),
       });
     } else {
-      set({ isActive: false });
+      const initialSeconds = minutesToSeconds(selectedDuration);
+      set({ 
+        isActive: false,
+        remainingSeconds: initialSeconds,
+        timerDisplay: formatTimeDisplay(initialSeconds),
+      });
     }
   },
 
@@ -97,7 +139,11 @@ export const useFocusStore = create<FocusState>((set, get) => ({
 
     const newSeconds = remainingSeconds - 1;
     if (newSeconds <= 0) {
-      get().stop();
+      set({
+        remainingSeconds: 0,
+        timerDisplay: formatTimeDisplay(0),
+      });
+      get().stop(true);
       return;
     }
     set({
