@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swaim Product OS — Design Variants v2</title>
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --panel: #141416;
+      --window-bg: #1c1c1f;
+      --accent: #3e7ff1;
+      --text: #ececed;
+      --text-muted: #8e8e93;
+      --border: rgba(255, 255, 255, 0.08);
+      --radius: 12px;
+      --shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      padding: 40px 20px;
+    }
+
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    header { margin-bottom: 60px; text-align: center; }
+    header h1 { font-size: 3rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+    header p { color: var(--text-muted); font-size: 1.2rem; }
+
+    .variant-section {
+      margin-bottom: 100px;
+      border-top: 1px solid var(--border);
+      padding-top: 40px;
+    }
+
+    .variant-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 30px;
+    }
+
+    .variant-info h2 { font-size: 2rem; margin-bottom: 8px; }
+    .variant-info p { color: var(--text-muted); max-width: 600px; }
+
+    /* Browser UI Mockup */
+    .browser-mockup {
+      width: 100%;
+      height: 700px;
+      background: #000;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      display: flex;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 64px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      gap: 20px;
+      z-index: 10;
+    }
+
+    .app-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--window-bg);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      font-size: 18px;
+    }
+
+    .app-icon:hover { border-color: var(--accent); background: rgba(62, 127, 241, 0.1); }
+    .app-icon.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* Account Switcher */
+    .account-bar {
+      width: 200px;
+      background: #111113;
+      border-right: 1px solid var(--border);
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .account-item {
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .account-item.active {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+    }
+
+    .account-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* Main Canvas */
+    .canvas {
+      flex: 1;
+      background: radial-gradient(circle at center, #1a1a1d 0%, #0a0a0b 100%);
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    /* Internal Windows (MDI) */
+    .window {
+      position: absolute;
+      background: var(--window-bg);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      min-width: 300px;
+      min-height: 200px;
+    }
+
+    .window-header {
+      padding: 10px 15px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+    }
+
+    .window-title { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+    .window-controls { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+    .window-content { flex: 1; padding: 15px; font-size: 13px; }
+
+    /* Variant Specifics */
+    /* Variant 1: Executive */
+    .v1 .window { border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); }
+    .v1 .account-bar { background: #000; }
+
+    /* Variant 2: PostHog Lab */
+    .v2 .canvas { background: #111; background-image: radial-gradient(#222 1px, transparent 1px); background-size: 20px 20px; }
+    .v2 .window { border-radius: 4px; box-shadow: 5px 5px 0px rgba(0,0,0,0.2); }
+    .v2 .floating-panel {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      background: var(--panel);
+      border: 1px solid var(--accent);
+      padding: 15px;
+      border-radius: 8px;
+      z-index: 100;
+    }
+
+    /* Variant 3: Discovery OS */
+    .v3 .discovery-tree {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      bottom: 20px;
+      width: 250px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    /* Variant 4: Contextual Hub */
+    .v4 .account-item.active[data-context="saas"] { border-left: 3px solid #3e7ff1; }
+    .v4 .account-item.active[data-context="client"] { border-left: 3px solid #f1a13e; }
+    .v4 .browser-mockup[data-active-context="client"] .window { border-top: 2px solid #f1a13e; }
+
+    /* UI Elements */
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.1);
+      margin-bottom: 10px;
+    }
+    .tag.blue { background: rgba(62, 127, 241, 0.2); color: #3e7ff1; }
+    .tag.green { background: rgba(40, 199, 111, 0.2); color: #28c76f; }
+
+    .metric { font-size: 24px; font-weight: 700; margin: 5px 0; }
+    .label { color: var(--text-muted); font-size: 11px; }
+
+    .prompt-box {
+      background: #111;
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px dashed var(--accent);
+      margin-top: 50px;
+    }
+    .prompt-box code { display: block; white-space: pre-wrap; color: var(--text-soft); line-height: 1.5; }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Swaim Product OS</h1>
+    <p>Концептуальные варианты интерфейса для управления продуктом и бизнесом</p>
+  </header>
+
+  <!-- VARIANT 1 -->
+  <section class="variant-section v1">
+    <div class="variant-header">
+      <div class="variant-info">
+        <h2>01. The Executive Canvas</h2>
+        <p>Строгий профессиональный интерфейс. Фокус на переключении контекстов и чистом рабочем пространстве. Минимум визуального шума, премиальные материалы.</p>
+      </div>
+    </div>
+    <div class="browser-mockup">
+      <div class="sidebar">
+        <div class="app-icon active">M</div>
+        <div class="app-icon">B</div>
+        <div class="app-icon">F</div>
+        <div style="flex: 1;"></div>
+        <div class="app-icon">⚙️</div>
+      </div>
+      <div class="account-bar">
+        <div class="panel-title" style="font-size: 10px; color: #555; text-transform: uppercase; margin-bottom: 10px;">Contexts</div>
+        <div class="account-item active">
+          <div class="account-avatar"></div>
+          <span>Alex / SaaS Project</span>
+        </div>
+        <div class="account-item">
+          <div class="account-avatar" style="background: #f1a13e;"></div>
+          <span>Client Research</span>
+        </div>
+        <div class="account-item">
+          <div class="account-avatar" style="background: #28c76f;"></div>
+          <span>Personal</span>
+        </div>
+      </div>
+      <div class="canvas">
+        <div class="window" style="top: 50px; left: 50px; width: 500px; height: 400px; z-index: 2;">
+          <div class="window-header">
+            <div class="window-title">Notion / Product Strategy</div>
+            <div class="window-controls"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          </div>
+          <div class="window-content">
+            <div class="tag blue">Strategy</div>
+            <h3>Q3 Roadmap</h3>
+            <p style="margin-top: 10px; color: #888;">1. MVP Validation<br>2. User Interviews<br>3. Landing Page V2</p>
+          </div>
+        </div>
+        <div class="window" style="top: 150px; left: 400px; width: 400px; height: 300px; z-index: 1;">
+          <div class="window-header">
+            <div class="window-title">Stripe / Finance</div>
+            <div class="window-controls"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          </div>
+          <div class="window-content">
+            <div class="label">Gross Volume</div>
+            <div class="metric">$12,450.00</div>
+            <div class="label">Pending Payout</div>
+            <div class="metric" style="font-size: 18px;">$1,200.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VARIANT 2 -->
+  <section class="variant-section v2">
+    <div class="variant-header">
+      <div class="variant-info">
+        <h2>02. The PostHog Lab</h2>
+        <p>Инструментальный подход. Сетка (grid) на фоне, окна как карточки инструментов. Всплывающие панели для быстрого доступа к терминалу и аналитике событий.</p>
+      </div>
+    </div>
+    <div class="browser-mockup">
+      <div class="sidebar">
+        <div class="app-icon">📈</div>
+        <div class="app-icon active">🧪</div>
+        <div class="app-icon">💻</div>
+        <div class="app-icon">💬</div>
+      </div>
+      <div class="canvas">
+        <div class="window" style="top: 30px; left: 30px; width: 600px; height: 450px;">
+          <div class="window-header">
+            <div class="window-title">PostHog / Events Pipeline</div>
+            <div class="window-controls"><span>_</span><span>□</span><span>×</span></div>
+          </div>
+          <div class="window-content" style="background: #111;">
+            <div style="height: 200px; border: 1px solid #333; margin-bottom: 10px; display: flex; align-items: flex-end; padding: 10px; gap: 5px;">
+              <div style="flex: 1; height: 40%; background: var(--accent);"></div>
+              <div style="flex: 1; height: 70%; background: var(--accent);"></div>
+              <div style="flex: 1; height: 55%; background: var(--accent);"></div>
+              <div style="flex: 1; height: 90%; background: var(--accent);"></div>
+            </div>
+            <div class="label">Live Events</div>
+            <div style="font-family: monospace; font-size: 11px; color: #28c76f; margin-top: 5px;">
+              > user_signed_up { plan: "pro" }<br>
+              > button_clicked { id: "start_trial" }
+            </div>
+          </div>
+        </div>
+        <div class="floating-panel">
+          <div class="label" style="color: var(--accent);">Terminal Insight</div>
+          <div style="font-family: monospace; font-size: 12px; margin-top: 10px;">
+            $ swaim-cli analyze --last-hour<br>
+            Found 12 new insights from Reddit.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VARIANT 3 -->
+  <section class="variant-section v3">
+    <div class="variant-header">
+      <div class="variant-info">
+        <h2>03. The Discovery OS</h2>
+        <p>Интеграция методологии. Браузер знает, над какой гипотезой вы работаете. Окна сайтов группируются вокруг продуктовых задач из "Inspired" и "Lean Startup".</p>
+      </div>
+    </div>
+    <div class="browser-mockup">
+      <div class="sidebar">
+        <div class="app-icon active">🎯</div>
+        <div class="app-icon">💡</div>
+        <div class="app-icon">📊</div>
+      </div>
+      <div class="canvas">
+        <div class="discovery-tree">
+          <div class="tag green">Active Hypothesis</div>
+          <h4 style="font-size: 14px; margin-bottom: 15px;">"Founders need a decision-first browser"</h4>
+          <div class="label">Experiments</div>
+          <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 12px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 4px;">
+              ✅ Landing Page Test
+            </div>
+            <div style="font-size: 12px; padding: 8px; background: var(--accent); border-radius: 4px;">
+              ⏳ User Interviews (5/10)
+            </div>
+          </div>
+        </div>
+        <div class="window" style="top: 50px; left: 300px; width: 500px; height: 400px;">
+          <div class="window-header">
+            <div class="window-title">Interview #08 Notes</div>
+            <div class="window-controls"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          </div>
+          <div class="window-content">
+            <p>"I have 100 tabs open and I don't know why I opened them 2 days ago."</p>
+            <div style="margin-top: 20px; padding: 10px; border: 1px solid var(--accent); border-radius: 6px;">
+              <span class="label">Link to Hypothesis</span><br>
+              <strong>H-01: Context Loss</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VARIANT 4 -->
+  <section class="variant-section v4">
+    <div class="variant-header">
+      <div class="variant-info">
+        <h2>04. Contextual Hub</h2>
+        <p>Цветовое кодирование контекстов. При переключении аккаунта меняется тема интерфейса и набор "быстрых" приложений. Идеально для тех, кто ведет несколько проектов одновременно.</p>
+      </div>
+    </div>
+    <div class="browser-mockup" data-active-context="client">
+      <div class="sidebar">
+        <div class="app-icon" style="border-color: #f1a13e;">A</div>
+        <div class="app-icon" style="border-color: #f1a13e;">S</div>
+        <div class="app-icon" style="border-color: #f1a13e;">N</div>
+      </div>
+      <div class="account-bar">
+        <div class="account-item">
+          <div class="account-avatar"></div>
+          <span>SaaS Project</span>
+        </div>
+        <div class="account-item active" data-context="client">
+          <div class="account-avatar" style="background: #f1a13e;"></div>
+          <span>Client: FinTech</span>
+        </div>
+      </div>
+      <div class="canvas" style="background: linear-gradient(135deg, #1a140d 0%, #0a0a0b 100%);">
+        <div class="window" style="top: 100px; left: 100px; width: 450px; height: 350px;">
+          <div class="window-header" style="background: rgba(241, 161, 62, 0.1);">
+            <div class="window-title">Client Dashboard</div>
+            <div class="window-controls"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          </div>
+          <div class="window-content">
+            <div class="tag" style="background: rgba(241, 161, 62, 0.2); color: #f1a13e;">External Link</div>
+            <h3>Competitor Analysis</h3>
+            <p style="margin-top: 10px;">Analyzing 4 fintech competitors in the EU market.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="prompt-box">
+    <h2>Промт для будущей реализации</h2>
+    <code>Создай профессиональный браузер-оболочку (Product OS) на Electron/React.
+Основные принципы:
+1. Интерфейс на базе холста (Canvas), где ссылки и сервисы открываются во внутренних перекрывающихся окнах (MDI), которые можно перемещать и ресайзить.
+2. Настраиваемая боковая панель виджетов (Marketing, Brand, Activity, Finance, Knowledge), вдохновленная Shift Browser.
+3. Система аккаунтов (Contexts), где каждый контекст сохраняет свое состояние окон и сессий.
+4. Дизайн в стиле "Executive Dark": глубокий черный, тонкие границы (1px), размытие (backdrop-filter), профессиональная типографика.
+5. Интеграция методологии: возможность привязывать открытое окно к конкретной гипотезе или эксперименту.</code>
+  </section>
+</div>
+
+</body>
+</html>
